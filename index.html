@@ -16,7 +16,7 @@ body{
 
 input, button{
   width:100%;
-  padding:15px;
+  padding:14px;
   margin:8px 0;
   font-size:18px;
 }
@@ -24,12 +24,29 @@ input, button{
 button{
   background:#222;
   color:white;
-  border:0;
+  border:none;
   border-radius:8px;
 }
 
-#reader{
+table{
   width:100%;
+  margin-top:15px;
+  border-collapse:collapse;
+}
+
+td, th{
+  border:1px solid #ccc;
+  padding:8px;
+  text-align:center;
+}
+
+.qty{
+  width:70px;
+  padding:5px;
+}
+
+#reader{
+  margin-top:10px;
 }
 
 </style>
@@ -57,14 +74,32 @@ button{
 <div id="reader"></div>
 
 
-<input id="barcode" placeholder="Barcode">
+<h3>Current Count</h3>
 
 
-<input id="qty" type="number" value="1">
+<table>
+
+<thead>
+
+<tr>
+<th>Barcode</th>
+<th>Qty</th>
+</tr>
+
+</thead>
+
+<tbody id="list">
+
+</tbody>
+
+</table>
 
 
-<button onclick="saveData()">
-SAVE
+<br>
+
+
+<button onclick="uploadLocation()">
+UPLOAD LOCATION
 </button>
 
 
@@ -75,13 +110,16 @@ SAVE
 <script>
 
 
+const API_URL = "PASTE_YOUR_SCRIPT_URL_HERE";
+
+
 let scanner;
 
-
-// PALITAN MO ITO NG API URL MO
-const API_URL = "https://script.google.com/macros/s/AKfycby4pEG3wNppU1nooqAFm3ps7oYkog6oE8iLdkn7pn4MWwJ81_qYONv5HimLgQ11iwU6bQ/exec";
+let countList = [];
 
 
+
+// START CAMERA SCAN
 
 function scanBarcode(){
 
@@ -92,32 +130,25 @@ scanner = new Html5Qrcode("reader");
 scanner.start(
 
 {
- facingMode:"environment"
+facingMode:"environment"
 },
 
 {
- fps:10,
- qrbox:250
+fps:10,
+qrbox:250
 },
 
 
 (decodedText)=>{
 
 
-document.getElementById("barcode").value = decodedText;
-
-
-document.getElementById("qty").value = 1;
+addBarcode(decodedText);
 
 
 scanner.stop();
 
 
-},
-
-
-(error)=>{}
-
+}
 
 );
 
@@ -126,35 +157,146 @@ scanner.stop();
 
 
 
+// ADD BARCODE
 
-function saveData(){
-
-
-let data={
+function addBarcode(code){
 
 
-user:
-document.getElementById("user").value,
+let existing = countList.find(
+item => item.barcode === code
+);
 
 
-session:
-"YEAR END",
+if(existing){
+
+existing.qty++;
+
+}else{
+
+countList.push({
+
+barcode:code,
+
+qty:1
+
+});
+
+}
 
 
-location:
-document.getElementById("location").value,
+displayList();
 
 
-barcode:
-document.getElementById("barcode").value,
+}
 
 
-qty:
-document.getElementById("qty").value
 
+// SHOW LIST
+
+function displayList(){
+
+
+let html="";
+
+
+countList.forEach((item,index)=>{
+
+
+html += `
+
+<tr>
+
+<td>${item.barcode}</td>
+
+<td>
+
+<input class="qty"
+type="number"
+value="${item.qty}"
+onchange="updateQty(${index},this.value)"
+>
+
+</td>
+
+</tr>
+
+`;
+
+
+});
+
+
+document.getElementById("list").innerHTML = html;
+
+
+}
+
+
+
+// CHANGE QTY
+
+function updateQty(index,value){
+
+
+countList[index].qty = Number(value);
+
+
+}
+
+
+
+
+// UPLOAD
+
+function uploadLocation(){
+
+
+let user =
+document.getElementById("user").value;
+
+
+let location =
+document.getElementById("location").value;
+
+
+
+if(countList.length===0){
+
+alert("No items scanned");
+
+return;
+
+}
+
+
+
+let uploads = countList.map(item=>{
+
+
+return {
+
+user:user,
+
+session:"YEAR END",
+
+location:location,
+
+barcode:item.barcode,
+
+qty:item.qty
 
 };
 
+
+});
+
+
+
+let completed=0;
+
+
+
+uploads.forEach(data=>{
 
 
 fetch(API_URL,{
@@ -166,19 +308,37 @@ body:JSON.stringify(data)
 })
 
 
-.then(response=>response.text())
+.then(r=>r.text())
+
+.then(()=>{
 
 
-.then(result=>{
+completed++;
 
 
-document.getElementById("msg").innerHTML="✅ SAVED";
+if(completed===uploads.length){
 
 
-document.getElementById("barcode").value="";
+document.getElementById("msg").innerHTML=
+"✅ Upload Complete";
 
 
-document.getElementById("qty").value="1";
+// CLEAR LOCATION
+
+document.getElementById("location").value="";
+
+
+// CLEAR LIST
+
+countList=[];
+
+displayList();
+
+
+}
+
+
+});
 
 
 });

@@ -1,1 +1,196 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+
+body{
+  font-family: Arial;
+  padding:20px;
+}
+
+input, button{
+  width:100%;
+  padding:15px;
+  margin:8px 0;
+  font-size:18px;
+}
+
+button{
+  background:#222;
+  color:white;
+  border:0;
+  border-radius:8px;
+}
+
+#reader{
+  width:100%;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<h2>📦 STOCK TAKE</h2>
+
+
+<input id="user" placeholder="User Name">
+
+
+<input id="location" placeholder="Location">
+
+
+<button onclick="scanBarcode()">
+📷 SCAN ITEM
+</button>
+
+
+<div id="reader"></div>
+
+
+<input id="barcode" placeholder="Barcode">
+
+
+<input id="qty" type="number" value="1">
+
+
+<button onclick="saveData()">
+SAVE
+</button>
+
+
+<p id="msg"></p>
+
+
+
+<script>
+
+
+let scanner;
+
+
+// PALITAN MO ITO NG API URL MO
+const API_URL = "https://script.google.com/macros/s/AKfycby4pEG3wNppU1nooqAFm3ps7oYkog6oE8iLdkn7pn4MWwJ81_qYONv5HimLgQ11iwU6bQ/exec";
+
+
+
+function scanBarcode(){
+
+
+scanner = new Html5Qrcode("reader");
+
+
+scanner.start(
+
+{
+ facingMode:"environment"
+},
+
+{
+ fps:10,
+ qrbox:250
+},
+
+
+(decodedText)=>{
+
+
+document.getElementById("barcode").value = decodedText;
+
+
+document.getElementById("qty").value = 1;
+
+
+scanner.stop();
+
+
+},
+
+
+(error)=>{}
+
+
+);
+
+
+}
+
+
+
+
+function saveData(){
+
+
+let data={
+
+
+user:
+document.getElementById("user").value,
+
+
+session:
+"YEAR END",
+
+
+location:
+document.getElementById("location").value,
+
+
+barcode:
+document.getElementById("barcode").value,
+
+
+qty:
+document.getElementById("qty").value
+
+
+};
+
+
+
+fetch(API_URL,{
+
+method:"POST",
+
+body:JSON.stringify(data)
+
+})
+
+
+.then(response=>response.text())
+
+
+.then(result=>{
+
+
+document.getElementById("msg").innerHTML="✅ SAVED";
+
+
+document.getElementById("barcode").value="";
+
+
+document.getElementById("qty").value="1";
+
+
+});
+
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>

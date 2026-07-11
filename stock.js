@@ -259,10 +259,9 @@ window.addEventListener(
 "load",
 function(){
 
-loadItems();
+ loadItems();
 
-loadLocation();
+ loadLocation();
 
 }
-
 );

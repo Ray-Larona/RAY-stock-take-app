@@ -60,15 +60,15 @@ border:1px solid #ccc;
 
 
 
-/* MAIN BUTTONS */
+/* MAIN BUTTON */
 
 button{
 
 width:100%;
 
-min-height:50px;
+height:50px;
 
-padding:12px;
+padding:10px;
 
 background:#FFB300;
 
@@ -87,15 +87,8 @@ cursor:pointer;
 }
 
 
-button:hover{
 
-opacity:0.8;
-
-}
-
-
-
-/* LOCATION BUTTONS */
+/* LOCATION */
 
 .location-buttons{
 
@@ -118,15 +111,22 @@ flex:1;
 
 /* ITEM LIST */
 
+#itemList{
+
+margin-top:10px;
+
+}
+
+
 .item-row{
 
 display:flex;
 
-justify-content:space-between;
-
 align-items:center;
 
-padding:6px 4px;
+justify-content:space-between;
+
+height:34px;
 
 border-bottom:1px solid #ddd;
 
@@ -139,15 +139,13 @@ font-size:14px;
 
 flex:1;
 
-overflow:hidden;
+text-align:left;
 
-text-overflow:ellipsis;
+overflow:hidden;
 
 white-space:nowrap;
 
-padding-right:8px;
-
-text-align:left;
+text-overflow:ellipsis;
 
 }
 
@@ -163,31 +161,39 @@ gap:3px;
 }
 
 
+/* SMALL +/- BUTTON OVERRIDE */
 
-/* SMALL PLUS MINUS BUTTON */
+.qty-control button,
+button.qty-btn,
+.item-row button{
 
-.qty-btn{
+width:24px !important;
 
-width:22px !important;
+height:24px !important;
 
-height:22px !important;
+min-height:24px !important;
 
-min-height:22px !important;
+max-height:24px !important;
 
 padding:0 !important;
 
-font-size:14px !important;
+margin:0 !important;
 
-line-height:20px;
+font-size:12px !important;
 
-border-radius:4px;
+line-height:24px !important;
+
+border-radius:4px !important;
+
+flex:none !important;
 
 }
 
 
+
 .qty{
 
-min-width:20px;
+width:25px;
 
 font-size:14px;
 
@@ -199,32 +205,27 @@ text-align:center;
 
 
 
-/* MESSAGE */
-
-#message{
-
-margin-top:15px;
-
-font-weight:bold;
-
-}
-
-
-
 /* MOBILE */
 
 @media(max-width:600px){
 
+.container{
+
+padding:15px;
+
+}
+
+
 h1{
 
-font-size:26px;
+font-size:24px;
 
 }
 
 
 h2{
 
-font-size:22px;
+font-size:20px;
 
 }
 

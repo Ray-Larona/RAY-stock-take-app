@@ -1,3 +1,84 @@
+let currentLocation = "";
+
+// ===============================
+// LOCATION
+// ===============================
+
+
+function setLocation(){
+
+
+let input =
+document.getElementById("locationInput").value.trim();
+
+
+
+if(input==""){
+
+alert("Please enter location");
+
+return;
+
+}
+
+
+
+currentLocation = input.toUpperCase();
+
+
+
+localStorage.setItem(
+"currentLocation",
+currentLocation
+);
+
+
+
+document.getElementById("currentLocation").innerHTML =
+currentLocation;
+
+
+
+alert(
+"Location set: " + currentLocation
+);
+
+
+}
+
+
+
+
+function loadLocation(){
+
+
+let saved =
+localStorage.getItem("currentLocation");
+
+
+
+if(saved){
+
+
+currentLocation = saved;
+
+
+let display =
+document.getElementById("currentLocation");
+
+
+if(display){
+
+display.innerHTML=currentLocation;
+
+}
+
+
+}
+
+
+}
+
 let stockItems = [];
 
 
@@ -178,7 +259,9 @@ window.addEventListener(
 "load",
 function(){
 
- loadItems();
+loadItems();
+
+loadLocation();
 
 }
 

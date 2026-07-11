@@ -119,7 +119,8 @@ function displayItems(){
 
   });
 
-
+document.getElementById("total").innerHTML =
+totalItems();  
 
 }
 

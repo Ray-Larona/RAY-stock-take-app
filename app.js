@@ -246,12 +246,3 @@ window.location.href="index.html";
 
 }
 
-
-
-
-
-if(location.pathname.includes("stock.html")){
-
-checkLogin();
-
-}

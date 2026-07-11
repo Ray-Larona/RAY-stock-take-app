@@ -8,11 +8,13 @@ display:flex;
 
 justify-content:center;
 
-align-items:center;
+align-items:flex-start;
 
-height:100vh;
+min-height:100vh;
 
 margin:0;
+
+padding:15px;
 
 }
 
@@ -21,37 +23,50 @@ margin:0;
 
 background:white;
 
-padding:30px;
+padding:20px;
 
 border-radius:15px;
 
-width:300px;
+width:100%;
+
+max-width:500px;
 
 text-align:center;
+
+box-sizing:border-box;
 
 }
 
 
 input{
 
-width:90%;
+width:100%;
 
-padding:12px;
+height:50px;
 
-margin:8px;
+font-size:18px;
+
+box-sizing:border-box;
+
+padding:10px;
+
+margin:8px 0;
 
 border-radius:8px;
 
 border:1px solid #ccc;
 
-font-size:16px;
-
 }
 
 
+
+/* MAIN BUTTONS */
+
 button{
 
-width:95%;
+width:100%;
+
+min-height:50px;
 
 padding:12px;
 
@@ -65,7 +80,7 @@ border-radius:8px;
 
 font-weight:bold;
 
-font-size:16px;
+font-size:18px;
 
 cursor:pointer;
 
@@ -79,60 +94,15 @@ opacity:0.8;
 }
 
 
-#message{
 
-margin-top:15px;
-
-font-weight:bold;
-
-}
-
-body{
-
-margin:0;
-padding:15px;
-font-family:Arial, sans-serif;
-
-}
-
-
-.container{
-
-width:100%;
-max-width:500px;
-margin:auto;
-
-}
-
-
-button{
-
-width:100%;
-min-height:50px;
-font-size:18px;
-font-weight:bold;
-border-radius:8px;
-cursor:pointer;
-
-}
-
-
-input{
-
-width:100%;
-height:50px;
-font-size:18px;
-box-sizing:border-box;
-padding:10px;
-border-radius:8px;
-
-}
-
+/* LOCATION BUTTONS */
 
 .location-buttons{
 
 display:flex;
+
 gap:10px;
+
 margin-top:10px;
 
 }
@@ -145,27 +115,15 @@ flex:1;
 }
 
 
-@media(max-width:600px){
 
-h1{
+/* ITEM LIST */
 
-font-size:26px;
-
-}
-
-
-h2{
-
-font-size:22px;
-
-}
-
-
-}
 .item-row{
 
 display:flex;
+
 justify-content:space-between;
+
 align-items:center;
 
 padding:6px 4px;
@@ -187,7 +145,9 @@ text-overflow:ellipsis;
 
 white-space:nowrap;
 
-padding-right:10px;
+padding-right:8px;
+
+text-align:left;
 
 }
 
@@ -198,32 +158,74 @@ display:flex;
 
 align-items:center;
 
-gap:4px;
+gap:3px;
 
 }
 
 
+
+/* SMALL PLUS MINUS BUTTON */
+
 .qty-btn{
 
-width:32px;
+width:22px !important;
 
-height:28px;
+height:22px !important;
 
-font-size:16px;
+min-height:22px !important;
 
-padding:0;
+padding:0 !important;
 
-border-radius:5px;
+font-size:14px !important;
+
+line-height:20px;
+
+border-radius:4px;
 
 }
 
 
 .qty{
 
-min-width:25px;
+min-width:20px;
+
+font-size:14px;
+
+font-weight:bold;
 
 text-align:center;
 
+}
+
+
+
+/* MESSAGE */
+
+#message{
+
+margin-top:15px;
+
 font-weight:bold;
+
+}
+
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+h1{
+
+font-size:26px;
+
+}
+
+
+h2{
+
+font-size:22px;
+
+}
 
 }

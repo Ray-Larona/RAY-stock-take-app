@@ -43,6 +43,7 @@ document.getElementById("barcode").innerHTML =
 decodedText;
 
 
+addBarcode(decodedText);  
 
 scanner.stop();
 

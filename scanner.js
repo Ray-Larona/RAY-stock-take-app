@@ -44,7 +44,9 @@ decodedText;
 
 
 addBarcode(decodedText);  
-
+  
+console.log("ADDED:", decodedText);
+  
 scanner.stop();
 
 

@@ -157,8 +157,7 @@ function saveItems(){
 function displayItems(){
 
 
-  let box =
-  document.getElementById("itemList");
+  let box = document.getElementById("itemList");
 
 
   if(!box){
@@ -168,7 +167,7 @@ function displayItems(){
   }
 
 
-  box.innerHTML="";
+  box.innerHTML = "";
 
 
   stockItems.forEach((item,index)=>{
@@ -176,22 +175,38 @@ function displayItems(){
 
     box.innerHTML += `
 
-    <div class="item">
+    <div class="item-row">
 
-      <b>${item.barcode}</b>
 
-      <br>
+      <div class="barcode">
 
-      Qty:
-      <button onclick="changeQty(${index},-1)">
-      -
-      </button>
+        ${item.barcode}
 
-      ${item.qty}
+      </div>
 
-      <button onclick="changeQty(${index},1)">
-      +
-      </button>
+
+      <div class="qty-control">
+
+
+        <button class="qty-btn"
+        onclick="changeQty(${index},-1)">
+        -
+        </button>
+
+
+        <span class="qty">
+        ${item.qty}
+        </span>
+
+
+        <button class="qty-btn"
+        onclick="changeQty(${index},1)">
+        +
+        </button>
+
+
+      </div>
+
 
     </div>
 
@@ -200,8 +215,17 @@ function displayItems(){
 
   });
 
-document.getElementById("total").innerHTML =
-totalItems();  
+
+
+  let total = document.getElementById("total");
+
+
+  if(total){
+
+    total.innerHTML = totalItems();
+
+  }
+
 
 }
 

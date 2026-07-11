@@ -67,14 +67,20 @@ data.role
 );
 
 
-
 document.getElementById("message").innerHTML =
 "Welcome " + data.name;
 
 
+// GO TO STOCK PAGE
+
+setTimeout(function(){
+
+window.location.href="stock.html";
+
+},1000);
+
 
 }
-
 else{
 
 

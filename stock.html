@@ -20,27 +20,7 @@
 
 <h1>📦 STOCK TAKE</h1>
 
-<h2>📍 LOCATION</h2>
 
-<input 
-type="text" 
-id="locationInput"
-placeholder="Enter Location">
-
-
-<br><br>
-
-
-<button onclick="setLocation()">
-SET LOCATION
-</button>
-
-
-<p>
-Current Location:
-<b id="currentLocation">---</b>
-</p>
-  
 <h3 id="user"></h3>
 
 
@@ -51,32 +31,58 @@ Session:
 </p>
 
 
-
 <hr>
-
 
 
 <h2>📍 LOCATION</h2>
 
 
-<button>
-SCAN LOCATION
+<input 
+type="text" 
+id="locationInput"
+placeholder="Enter Location">
+
+
+<div class="location-buttons">
+
+
+<button onclick="setLocation()">
+SET LOCATION
 </button>
 
 
+<button onclick="startLocationScanner()">
+📷 SCAN LOCATION
+</button>
 
-<br><br>
+
+</div>
+
+
+
+<p>
+Current Location:
+<br>
+<b id="currentLocation">---</b>
+</p>
+
+
+
+<hr>
 
 
 
 <h2>📷 ITEM</h2>
 
+
 <div id="reader" style="width:300px; display:none;"></div>
+
 
 
 <button onclick="startScanner()">
 START SCAN
 </button>
+
 
 
 <p>
@@ -85,13 +91,12 @@ Barcode:
 </p>
 
 
-<button>
-SCAN ITEM
-</button>
 
 <h2>📋 ITEMS</h2>
 
+
 <div id="itemList"></div>
+
 
 
 <h3>
@@ -99,7 +104,9 @@ Total:
 <span id="total">0</span>
 </h3>
 
-<br><br>
+
+
+<br>
 
 
 
@@ -112,25 +119,27 @@ LOGOUT
 <p id="message"></p>
 
 
+
 </div>
 
-<script>
-alert("Stock page loaded");
-alert(localStorage.getItem("token"));
-</script>
 
-<script>
-console.log("STOCK HTML OK");
-console.log("TOKEN:", localStorage.getItem("token"));
-</script>
-  
+
+
+<!-- App Scripts -->
+
 <script src="app.js"></script>
 
 <!-- Barcode Scanner Library -->
+
 <script src="https://unpkg.com/html5-qrcode"></script>
 
-<script src="app.js"></script>
 
 <script src="scanner.js"></script>
 
 <script src="stock.js"></script>
+
+
+
+</body>
+
+</html>

@@ -3,53 +3,11 @@
 
 <head>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://unpkg.com/html5-qrcode"></script>
+<title>Stock Take App</title>
 
-<style>
-
-body{
-  font-family: Arial;
-  padding:20px;
-}
-
-input, button{
-  width:100%;
-  padding:14px;
-  margin:8px 0;
-  font-size:18px;
-}
-
-button{
-  background:#FFA500;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-}
-
-table{
-  width:100%;
-  margin-top:15px;
-  border-collapse:collapse;
-}
-
-td, th{
-  border:1px solid #ccc;
-  padding:8px;
-  text-align:center;
-}
-
-.qty{
-  width:70px;
-  padding:5px;
-}
-
-#reader{
-  margin-top:10px;
-}
-
-</style>
+<link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -57,298 +15,36 @@ td, th{
 <body>
 
 
-<h2>📦📋 Physical Inventory Count</h2>
+<div class="container">
 
 
-<input id="user" placeholder="User Name">
+<h1>📦 STOCK TAKE</h1>
 
 
-<input id="location" placeholder="Location">
+<input 
+id="username"
+type="text"
+placeholder="Username">
 
 
-<button onclick="scanBarcode()">
-📷 SCAN ITEM
+<input 
+id="password"
+type="password"
+placeholder="Password">
+
+
+<button onclick="login()">
+LOGIN
 </button>
 
 
-<div id="reader"></div>
+<p id="message"></p>
 
 
-<h3>Current Count</h3>
+</div>
 
 
-<table>
-
-<thead>
-
-<tr>
-<th>SKU/Barcode</th>
-<th>Qty</th>
-</tr>
-
-</thead>
-
-<tbody id="list">
-
-</tbody>
-
-</table>
-
-
-<br>
-
-
-<button onclick="uploadLocation()">
-UPLOAD to SHEET
-</button>
-
-
-<p id="msg"></p>
-
-
-
-<script>
-
-
-const API_URL = "https://script.google.com/macros/s/AKfycby4pEG3wNppU1nooqAFm3ps7oYkog6oE8iLdkn7pn4MWwJ81_qYONv5HimLgQ11iwU6bQ/exec";
-
-
-let scanner;
-
-let countList = [];
-
-
-
-// START CAMERA SCAN
-
-function scanBarcode(){
-
-
-scanner = new Html5Qrcode("reader");
-
-
-scanner.start(
-
-{
-facingMode:"environment"
-},
-
-{
-fps:10,
-qrbox:250
-},
-
-
-(decodedText)=>{
-
-
-addBarcode(decodedText);
-
-
-scanner.stop();
-
-
-}
-
-);
-
-
-}
-
-
-
-// ADD BARCODE
-
-function addBarcode(code){
-
-
-let existing = countList.find(
-item => item.barcode === code
-);
-
-
-if(existing){
-
-existing.qty++;
-
-}else{
-
-countList.push({
-
-barcode:code,
-
-qty:1
-
-});
-
-}
-
-
-displayList();
-
-
-}
-
-
-
-// SHOW LIST
-
-function displayList(){
-
-
-let html="";
-
-
-countList.forEach((item,index)=>{
-
-
-html += `
-
-<tr>
-
-<td>${item.barcode}</td>
-
-<td>
-
-<input class="qty"
-type="number"
-value="${item.qty}"
-onchange="updateQty(${index},this.value)"
->
-
-</td>
-
-</tr>
-
-`;
-
-
-});
-
-
-document.getElementById("list").innerHTML = html;
-
-
-}
-
-
-
-// CHANGE QTY
-
-function updateQty(index,value){
-
-
-countList[index].qty = Number(value);
-
-
-}
-
-
-
-
-// UPLOAD
-
-function uploadLocation(){
-
-
-let user =
-document.getElementById("user").value;
-
-
-let location =
-document.getElementById("location").value;
-
-
-
-if(countList.length===0){
-
-alert("No items scanned");
-
-return;
-
-}
-
-
-
-let uploads = countList.map(item=>{
-
-
-return {
-
-user:user,
-
-session:"YEAR END",
-
-location:location,
-
-barcode:item.barcode,
-
-qty:item.qty
-
-};
-
-
-});
-
-
-
-let completed=0;
-
-
-
-uploads.forEach(data=>{
-
-
-fetch(API_URL,{
-
-method:"POST",
-
-body:JSON.stringify(data)
-
-})
-
-
-.then(r=>r.text())
-
-.then(()=>{
-
-
-completed++;
-
-
-if(completed===uploads.length){
-
-
-document.getElementById("msg").innerHTML=
-"✅ Upload Complete";
-
-
-// CLEAR LOCATION
-
-document.getElementById("location").value="";
-
-
-// CLEAR LIST
-
-countList=[];
-
-displayList();
-
-
-}
-
-
-});
-
-
-});
-
-
-}
-
-
-
-</script>
+<script src="app.js"></script>
 
 
 </body>

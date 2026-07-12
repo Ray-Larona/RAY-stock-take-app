@@ -5,60 +5,147 @@ function uploadStockTake(){
     return;
   }
 
+
   if(stockItems.length==0){
     alert("No items to upload");
     return;
   }
 
+
   const btn = document.getElementById("uploadBtn");
+
 
   btn.disabled = true;
   btn.innerHTML = "⏳ UPLOADING...";
 
+
   const token = localStorage.getItem("token");
+
 
   fetch(API_URL,{
     method:"POST",
     body:JSON.stringify({
+
       action:"uploadStockTake",
+
       token:token,
+
       location:currentLocation,
+
       items:stockItems
+
     })
+
   })
+
   .then(res=>res.json())
+
   .then(result=>{
+
 
     if(result.success){
 
-      alert("✅ Upload Successful!");
+
+      alert(
+        "✅ Upload Successful!\n\nBatch: "
+        + result.batchID
+      );
+
+
+      // CLEAR ITEMS
 
       stockItems = [];
-      currentLocation = "";
+
 
       localStorage.removeItem("stockItems");
+
+
+      // CLEAR LOCATION
+
+      currentLocation = "";
+
+
       localStorage.removeItem("currentLocation");
 
-      document.getElementById("locationInput").value = "";
-      document.getElementById("currentLocation").innerText = "---";
+
+      const locationInput =
+      document.getElementById("locationInput");
+
+
+      if(locationInput){
+        locationInput.value="";
+      }
+
+
+      const currentLocationText =
+      document.getElementById("currentLocation");
+
+
+      if(currentLocationText){
+        currentLocationText.innerText="---";
+      }
+
+
+      const barcodeText =
+      document.getElementById("barcode");
+
+
+      if(barcodeText){
+        barcodeText.innerText="---";
+      }
+
+
+      // REFRESH LIST
 
       displayItems();
 
-    }else{
 
-      alert(result.message);
+      // RESET TOTAL
+
+      const total =
+      document.getElementById("total");
+
+
+      if(total){
+        total.innerText="0";
+      }
+
 
     }
 
+    else{
+
+
+      alert(result.message);
+
+
+    }
+
+
   })
+
+
   .catch(err=>{
-    alert("Upload failed.\n" + err);
+
+
+    alert(
+      "Upload failed.\n" + err
+    );
+
+
   })
+
+
   .finally(()=>{
 
+
     btn.disabled = false;
-    btn.innerHTML = "📤 UPLOAD LOCATION";
+
+    btn.innerHTML =
+    "📤 UPLOAD LOCATION";
+
 
   });
+
 
 }

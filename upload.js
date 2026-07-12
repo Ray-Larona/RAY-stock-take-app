@@ -47,6 +47,8 @@ function uploadStockTake(){
 
     if(result.success){
 
+      console.log("LOCATION BEFORE CLEAR:", currentLocation);
+console.log("SAVED LOCATION:", localStorage.getItem("currentLocation"));
 
       alert(
         "✅ Upload Successful!\n\nBatch: "

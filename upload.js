@@ -38,7 +38,9 @@ function uploadStockTake(){
 
   })
 
+
   .then(res=>res.json())
+
 
   .then(result=>{
 
@@ -52,7 +54,7 @@ function uploadStockTake(){
       );
 
 
-      // CLEAR ITEMS
+      // CLEAR ONLY ITEMS
 
       stockItems = [];
 
@@ -60,30 +62,10 @@ function uploadStockTake(){
       localStorage.removeItem("stockItems");
 
 
-      // CLEAR LOCATION
-
-      currentLocation = "";
+      // KEEP LOCATION
 
 
-      localStorage.removeItem("currentLocation");
-
-
-      const locationInput =
-      document.getElementById("locationInput");
-
-
-      if(locationInput){
-        locationInput.value="";
-      }
-
-
-      const currentLocationText =
-      document.getElementById("currentLocation");
-
-
-      if(currentLocationText){
-        currentLocationText.innerText="---";
-      }
+      displayItems();
 
 
       const barcodeText =
@@ -91,23 +73,20 @@ function uploadStockTake(){
 
 
       if(barcodeText){
+
         barcodeText.innerText="---";
+
       }
 
-
-      // REFRESH LIST
-
-      displayItems();
-
-
-      // RESET TOTAL
 
       const total =
       document.getElementById("total");
 
 
       if(total){
+
         total.innerText="0";
+
       }
 
 

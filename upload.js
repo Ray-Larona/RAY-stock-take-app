@@ -1,94 +1,64 @@
 function uploadStockTake(){
 
+  if(!currentLocation){
+    alert("Please set location first");
+    return;
+  }
 
-if(!currentLocation){
+  if(stockItems.length==0){
+    alert("No items to upload");
+    return;
+  }
 
-alert("Please set location first");
+  const btn = document.getElementById("uploadBtn");
 
-return;
+  btn.disabled = true;
+  btn.innerHTML = "⏳ UPLOADING...";
 
-}
+  const token = localStorage.getItem("token");
 
+  fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"uploadStockTake",
+      token:token,
+      location:currentLocation,
+      items:stockItems
+    })
+  })
+  .then(res=>res.json())
+  .then(result=>{
 
+    if(result.success){
 
-if(stockItems.length==0){
+      alert("✅ Upload Successful!");
 
-alert("No items to upload");
+      stockItems = [];
+      currentLocation = "";
 
-return;
+      localStorage.removeItem("stockItems");
+      localStorage.removeItem("currentLocation");
 
-}
+      document.getElementById("locationInput").value = "";
+      document.getElementById("currentLocation").innerText = "---";
 
+      displayItems();
 
+    }else{
 
-let token =
-localStorage.getItem("token");
+      alert(result.message);
 
+    }
 
+  })
+  .catch(err=>{
+    alert("Upload failed.\n" + err);
+  })
+  .finally(()=>{
 
-let data = {
+    btn.disabled = false;
+    btn.innerHTML = "📤 UPLOAD LOCATION";
 
-
-action:"uploadStockTake",
-
-token:token,
-
-location:currentLocation,
-
-items:stockItems
-
-
-};
-
-
-
-fetch(
-"https://script.google.com/macros/s/AKfycbyPmYgCYVx4nhm6eqSzPG8CuD0IsC_-7SwT8K6ZH-F8dy1jA2NoHS0eJwT-5aS83OdpqQ/exec",
-{
-
-method:"POST",
-
-body:JSON.stringify(data)
-
-}
-
-)
-
-.then(res=>res.json())
-
-.then(result=>{
-
-
-if(result.success){
-
-
-alert("Upload Successful");
-
-
-stockItems=[];
-
-
-localStorage.removeItem(
-"stockItems"
-);
-
-
-displayItems();
-
-
-}
-
-else{
-
-
-alert(result.message);
-
-
-}
-
-
-
-});
-
+  });
 
 }

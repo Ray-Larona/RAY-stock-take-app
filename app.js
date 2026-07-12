@@ -1,213 +1,211 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyPmYgCYVx4nhm6eqSzPG8CuD0IsC_-7SwT8K6ZH-F8dy1jA2NoHS0eJwT-5aS83OdpqQ/exec";
 
 
+// ===============================
 // LOGIN
+// ===============================
 
 function login(){
 
-const username = document.getElementById("username").value;
-const password = document.getElementById("password").value;
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
 
+  if(username=="" || password==""){
+    document.getElementById("message").innerHTML="Please enter username and password.";
+    return;
+  }
 
-fetch(API_URL,{
+  const btn=document.getElementById("loginBtn");
 
-method:"POST",
+  if(btn){
+    btn.disabled=true;
+    btn.innerHTML="⏳ LOGGING IN...";
+  }
 
-body:JSON.stringify({
+  fetch(API_URL,{
 
-action:"login",
-username:username,
-password:password
+    method:"POST",
 
-})
+    body:JSON.stringify({
 
-})
+      action:"login",
+      username:username,
+      password:password
 
-.then(res=>res.json())
+    })
 
-.then(data=>{
+  })
 
+  .then(res=>res.json())
 
-console.log(data);
+  .then(data=>{
 
+    console.log(data);
 
-if(data.success){
+    if(data.success){
 
+      localStorage.setItem("token",data.token);
+      localStorage.setItem("name",data.name);
+      localStorage.setItem("role",data.role);
 
-localStorage.setItem("token",data.token);
-localStorage.setItem("name",data.name);
-localStorage.setItem("role",data.role);
+      window.location.href="stock.html";
 
+    }else{
 
-window.location.href="stock.html";
+      document.getElementById("message").innerHTML=data.message;
 
+      if(btn){
+        btn.disabled=false;
+        btn.innerHTML="LOGIN";
+      }
+
+    }
+
+  })
+
+  .catch(err=>{
+
+    document.getElementById("message").innerHTML="Connection Error";
+
+    console.log(err);
+
+    if(btn){
+      btn.disabled=false;
+      btn.innerHTML="LOGIN";
+    }
+
+  });
 
 }
-else{
-
-document.getElementById("message").innerHTML=data.message;
-
-}
-
-
-});
-
-
-}
 
 
 
-
+// ===============================
 // CHECK STOCK PAGE
+// ===============================
 
 function checkLogin(){
 
+  let token = localStorage.getItem("token");
 
-let token = localStorage.getItem("token");
+  console.log("TOKEN:",token);
 
+  if(!token){
 
-console.log("TOKEN:",token);
+    alert("NO TOKEN");
 
+    window.location.href="index.html";
 
+    return;
 
-if(!token){
+  }
 
-alert("NO TOKEN");
+  fetch(API_URL,{
 
-window.location.href="index.html";
+    method:"POST",
 
-return;
+    body:JSON.stringify({
 
-}
+      action:"checkSession",
 
+      token:token
 
+    })
 
-fetch(API_URL,{
+  })
 
-method:"POST",
+  .then(res=>res.json())
 
-body:JSON.stringify({
+  .then(data=>{
 
-action:"checkSession",
+    console.log("SESSION RESULT:",data);
 
-token:token
+    if(data.success){
 
-})
+      document.getElementById("user").innerHTML =
+      "👤 "+data.name+" ("+data.role+")";
 
-})
+      loadSession();
 
+    }else{
 
-.then(res=>res.json())
+      alert("INVALID SESSION");
 
-.then(data=>{
+      localStorage.clear();
 
+      window.location.href="index.html";
 
-console.log("SESSION RESULT:",data);
+    }
 
-
-
-if(data.success){
-
-
-document.getElementById("user").innerHTML =
-"👤 "+data.name+" ("+data.role+")";
-
-
-
-loadSession();
-
-
-}
-
-else{
-
-
-alert("INVALID SESSION");
-
-localStorage.clear();
-
-window.location.href="index.html";
-
+  });
 
 }
 
 
 
-});
-
-
-}
-
-
-
-
+// ===============================
+// LOAD SESSION
+// ===============================
 
 function loadSession(){
 
+  fetch(API_URL,{
 
-fetch(API_URL,{
+    method:"POST",
 
-method:"POST",
+    body:JSON.stringify({
 
-body:JSON.stringify({
+      action:"getSession"
 
-action:"getSession"
+    })
 
-})
+  })
 
-})
+  .then(res=>res.json())
 
+  .then(data=>{
 
-.then(res=>res.json())
+    console.log("ACTIVE SESSION:",data);
 
-.then(data=>{
+    if(data.success){
 
+      document.getElementById("session").innerHTML =
+      data.session;
 
-console.log("ACTIVE SESSION:",data);
+    }
 
-
-
-if(data.success){
-
-
-document.getElementById("session").innerHTML =
-data.session;
-
-
-}
-
-
-});
-
+  });
 
 }
 
 
 
+// ===============================
+// LOGOUT
+// ===============================
 
 function logout(){
 
+  localStorage.clear();
 
-localStorage.clear();
-
-window.location.href="index.html";
-
+  window.location.href="index.html";
 
 }
 
 
 
+// ===============================
+// START
+// ===============================
 
 window.onload=function(){
 
+  if(document.getElementById("user")){
 
-if(document.getElementById("user")){
+    console.log("STOCK PAGE DETECTED");
 
-console.log("STOCK PAGE DETECTED");
+    checkLogin();
 
-checkLogin();
-
-}
-
+  }
 
 }

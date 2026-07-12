@@ -186,12 +186,53 @@ function loadSession(){
 
 function logout(){
 
-  localStorage.clear();
+  let token = localStorage.getItem("token");
 
-  window.location.href="index.html";
+  if(!token){
+    window.location.href="index.html";
+    return;
+  }
+
+
+  fetch(API_URL,{
+
+    method:"POST",
+
+    body:JSON.stringify({
+
+      action:"logout",
+      token:token
+
+    })
+
+  })
+
+  .then(res=>res.json())
+
+  .then(data=>{
+
+    console.log("LOGOUT RESULT:",data);
+
+
+    localStorage.clear();
+
+
+    window.location.href="index.html";
+
+
+  })
+
+  .catch(err=>{
+
+    console.log(err);
+
+    localStorage.clear();
+
+    window.location.href="index.html";
+
+  });
 
 }
-
 
 
 // ===============================

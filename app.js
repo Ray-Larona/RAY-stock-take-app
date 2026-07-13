@@ -240,6 +240,8 @@ function logout(){
 
 function startHeartbeat(){
 
+  console.log("HEARTBEAT STARTED");
+
   setInterval(function(){
 
 

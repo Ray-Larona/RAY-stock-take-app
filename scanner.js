@@ -9,15 +9,43 @@ document.getElementById("reader").style.display="block";
 scanner = new Html5Qrcode("reader");
 
 
+Html5Qrcode.getCameras().then(cameras => {
+
+
+if(cameras && cameras.length){
+
+
+let cameraId = cameras[0].id;
+
+
+// piliin ang rear camera
+
+for(let cam of cameras){
+
+  if(cam.label.toLowerCase().includes("back") ||
+     cam.label.toLowerCase().includes("rear")){
+
+    cameraId = cam.id;
+    break;
+
+  }
+
+}
+
+
+
 scanner.start(
 
-{
-  facingMode:"environment"
-},
+cameraId,
 
 {
-  fps:10,
-  qrbox:250
+
+fps:10,
+
+qrbox:250,
+
+aspectRatio:1.777
+
 },
 
 
@@ -43,16 +71,25 @@ document.getElementById("barcode").innerHTML =
 decodedText;
 
 
-addBarcode(decodedText);  
-  
+addBarcode(decodedText);
+
+
 console.log("ADDED:", decodedText);
-  
+
+
 scanner.stop();
 
 
 }
 
+
 );
+
+
+}
+
+
+});
 
 
 }

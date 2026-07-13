@@ -247,6 +247,36 @@ window.onload=function(){
 
     checkLogin();
 
+
+    // AUTO LOGOUT WHEN CLOSE TAB/BROWSER
+
+    window.addEventListener("beforeunload", function(){
+
+      let token = localStorage.getItem("token");
+
+
+      if(token){
+
+        navigator.sendBeacon(
+
+          API_URL,
+
+          JSON.stringify({
+
+            action:"logout",
+
+            token:token
+
+          })
+
+        );
+
+      }
+
+
+    });
+
+
   }
 
 }

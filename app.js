@@ -234,6 +234,67 @@ function logout(){
 
 }
 
+// ===============================
+// HEARTBEAT EVERY 5 MINUTES
+// ===============================
+
+function startHeartbeat(){
+
+  setInterval(function(){
+
+
+    let token = localStorage.getItem("token");
+
+
+    if(token){
+
+
+      fetch(API_URL,{
+
+        method:"POST",
+
+        body:JSON.stringify({
+
+          action:"heartbeat",
+
+          token:token
+
+        })
+
+      })
+
+      .then(res=>res.json())
+
+      .then(data=>{
+
+        console.log("HEARTBEAT:",data);
+
+
+        if(!data.success){
+
+          localStorage.clear();
+
+          window.location.href="index.html";
+
+        }
+
+
+      })
+
+      .catch(err=>{
+
+        console.log("Heartbeat error:",err);
+
+      });
+
+
+    }
+
+
+  },300000); // 5 minutes
+
+
+}
 
 // ===============================
 // START
@@ -247,7 +308,11 @@ window.onload=function(){
 
     checkLogin();
 
+    startHeartbeat();
 
+  }
+
+}
     // AUTO LOGOUT WHEN CLOSE TAB/BROWSER
 
     window.addEventListener("beforeunload", function(){

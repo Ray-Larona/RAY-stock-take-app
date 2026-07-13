@@ -293,7 +293,7 @@ function startHeartbeat(){
     }
 
 
-  },10000); // 5 minutes
+  },10000); // 10 sec test
 
 
 }

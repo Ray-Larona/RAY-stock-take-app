@@ -237,3 +237,40 @@ font-size:20px;
 }
 
 }
+
+/* ===============================
+   SCAN BUTTON
+=============================== */
+
+.scan-btn{
+
+background:#E53935 !important;
+
+color:white;
+
+}
+
+.scan-btn:hover{
+
+background:#C62828 !important;
+
+}
+
+
+/* ===============================
+   LOGOUT BUTTON
+=============================== */
+
+.logout-btn{
+
+background:#008B8B !important;
+
+color:white;
+
+}
+
+.logout-btn:hover{
+
+background:#006D6D !important;
+
+}

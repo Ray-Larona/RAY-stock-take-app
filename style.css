@@ -389,7 +389,6 @@ margin-top:10px;
 
 @media(max-width:600px){
 
-
 .container{
 
 padding:15px;
@@ -400,6 +399,23 @@ padding:15px;
 h1{
 
 font-size:24px;
+
+}
+
+
+h1 .rntl{
+
+display:block;
+
+font-size:8px !important;
+
+font-weight:normal;
+
+color:#666;
+
+margin-top:-5px;
+
+letter-spacing:1px;
 
 }
 
@@ -427,18 +443,21 @@ width:100%;
 
 }
 
+
+/* DESKTOP */
+
 .rntl{
 
-    display:block;
+display:block;
 
-    font-size:8px;
+font-size:8px;
 
-    font-weight:normal;
+font-weight:normal;
 
-    color:#666;
+color:#666;
 
-    margin-top:-5px;
+margin-top:-5px;
 
-    letter-spacing:1px;
+letter-spacing:1px;
 
 }

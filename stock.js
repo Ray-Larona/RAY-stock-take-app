@@ -335,3 +335,30 @@ function clearList(){
 
 
 }
+
+// ===============================
+// MANUAL BARCODE INPUT
+// ===============================
+
+function manualAddBarcode(){
+
+  let barcode =
+  document.getElementById("manualBarcode").value.trim();
+
+
+  if(barcode==""){
+
+    alert("Please enter barcode");
+
+    return;
+
+  }
+
+
+  addBarcode(barcode);
+
+
+  document.getElementById("manualBarcode").value="";
+
+
+}

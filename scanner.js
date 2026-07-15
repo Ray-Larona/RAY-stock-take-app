@@ -11,7 +11,7 @@ function startScanner(){
   document.getElementById("cameraBox").style.display="block";
 
   document.getElementById("closeCameraBtn").style.display="block";
-  
+
   document.getElementById("scanBtn").style.display="none";
 
 
@@ -29,7 +29,7 @@ function startScanner(){
 
 
 
-      // piliin ang rear camera
+      // SELECT REAR CAMERA
 
       for(let cam of cameras){
 
@@ -44,7 +44,6 @@ function startScanner(){
           break;
 
         }
-
 
       }
 
@@ -99,13 +98,14 @@ function startScanner(){
 
 
 
-          // STOP AFTER SCAN
+          // AUTO CLOSE AFTER SCAN
 
           scanner.stop().then(()=>{
 
 
             document.getElementById("cameraBox").style.display="none";
 
+            document.getElementById("closeCameraBtn").style.display="none";
 
             document.getElementById("scanBtn").style.display="block";
 
@@ -113,6 +113,12 @@ function startScanner(){
           });
 
 
+
+        },
+
+        (errorMessage)=>{
+
+          console.log("SCAN ERROR:",errorMessage);
 
         }
 
@@ -133,25 +139,34 @@ function startScanner(){
 
 
 // ===============================
-// CLOSE CAMERA BUTTON (X)
+// CLOSE CAMERA X BUTTON
 // ===============================
 
 function stopScanner(){
 
+
   if(scanner){
+
 
     scanner.stop().then(()=>{
 
+
       document.getElementById("cameraBox").style.display="none";
+
 
       document.getElementById("closeCameraBtn").style.display="none";
 
+
       document.getElementById("scanBtn").style.display="block";
+
 
       scanner.clear();
 
+
     });
 
+
   }
+
 
 }

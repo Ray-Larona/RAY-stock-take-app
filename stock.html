@@ -74,27 +74,32 @@ Current Location:
 
 <div id="cameraBox" style="position:relative; display:none;">
 
-<button 
-id="closeCameraBtn"
-onclick="stopScanner()"
-style="
-display:none;
-position:absolute;
-right:5px;
-top:5px;
-z-index:999;
-border:none;
-background:none;
-color:red;
-font-size:30px;
-font-weight:bold;
-cursor:pointer;
-padding:0;
-width:auto;
-height:auto;">
-X
-</button>
- 
+<div id="cameraBox" style="position:relative; width:300px; display:none;">
+
+  <div id="reader" style="width:300px;"></div>
+
+  <button 
+  id="closeCameraBtn"
+  onclick="stopScanner()"
+  style="
+  display:none;
+  position:absolute;
+  right:5px;
+  top:5px;
+  z-index:9999;
+  border:none;
+  background:transparent;
+  color:red;
+  font-size:30px;
+  font-weight:bold;
+  padding:0;
+  width:35px;
+  height:35px;
+  cursor:pointer;">
+  X
+  </button>
+
+</div> 
   <div id="reader" style="width:300px;"></div>
 
 </div>

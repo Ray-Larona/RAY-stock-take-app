@@ -426,3 +426,16 @@ width:100%;
 
 
 }
+h1 small{
+
+    display:block;
+
+    font-size:12px;
+
+    font-weight:normal;
+
+    margin-top:5px;
+
+    color:#666;
+
+}

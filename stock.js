@@ -297,3 +297,41 @@ function(){
 
 }
 );
+
+// ===============================
+// CLEAR LIST
+// ===============================
+
+function clearList(){
+
+  let confirmClear = confirm(
+    "⚠️ Clear all scanned items?"
+  );
+
+
+  if(confirmClear){
+
+
+    stockItems = [];
+
+
+    localStorage.removeItem(
+      "stockItems"
+    );
+
+
+    displayItems();
+
+
+    document.getElementById("barcode").innerHTML="---";
+
+
+    alert(
+      "List cleared"
+    );
+
+
+  }
+
+
+}

@@ -8,11 +8,11 @@ let scanner;
 function startScanner(){
 
 
-  document.getElementById("cameraBox").style.display="block";
+  document.getElementById("cameraBox").style.display = "block";
 
-  document.getElementById("closeCameraBtn").style.display="block";
+  document.getElementById("closeCameraBtn").style.display = "block";
 
-  document.getElementById("scanBtn").style.display="none";
+  document.getElementById("scanBtn").style.display = "none";
 
 
   scanner = new Html5Qrcode("reader");
@@ -29,14 +29,16 @@ function startScanner(){
 
 
 
-      // SELECT REAR CAMERA
+      // SELECT BACK CAMERA
 
       for(let cam of cameras){
 
+        let label = cam.label.toLowerCase();
 
         if(
-          cam.label.toLowerCase().includes("back") ||
-          cam.label.toLowerCase().includes("rear")
+          label.includes("back") ||
+          label.includes("rear") ||
+          label.includes("environment")
         ){
 
           cameraId = cam.id;
@@ -98,7 +100,7 @@ function startScanner(){
 
 
 
-          // AUTO CLOSE AFTER SCAN
+          // AUTO CLOSE AFTER SUCCESS SCAN
 
           scanner.stop().then(()=>{
 
@@ -114,12 +116,6 @@ function startScanner(){
 
 
 
-        },
-
-        (errorMessage)=>{
-
-          console.log("SCAN ERROR:",errorMessage);
-
         }
 
 
@@ -128,6 +124,10 @@ function startScanner(){
 
     }
 
+
+  }).catch(error=>{
+
+    console.log("CAMERA ERROR:",error);
 
   });
 
@@ -139,7 +139,7 @@ function startScanner(){
 
 
 // ===============================
-// CLOSE CAMERA X BUTTON
+// CLOSE CAMERA X
 // ===============================
 
 function stopScanner(){

@@ -311,3 +311,25 @@ border-radius:8px;
 background:#006D6D !important;
 
 }
+.list-title{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    margin-bottom:10px;
+}
+
+.list-title .clear-btn{
+    justify-self:start;
+    background:#d32f2f;
+    color:white;
+    border:none;
+    border-radius:6px;
+    padding:5px 10px;
+    font-size:12px;
+    cursor:pointer;
+}
+
+.list-title h2{
+    margin:0;
+    text-align:center;
+}

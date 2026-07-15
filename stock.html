@@ -71,16 +71,17 @@ Current Location:
 <hr>
 
 
-<i class="fa-solid fa-barcode-read"></i>
- 
-
 
 <div id="reader" style="width:300px; display:none;"></div>
 
 
 
-<button class="scan-btn" onclick="startScanner()">
-START SCAN
+<button id="scanBtn" class="scan-btn" onclick="startScanner()">
+▌║│▌║▌│║ START SCAN
+</button>
+
+<button id="closeScanBtn" class="logout-btn" onclick="stopScanner()" style="display:none;">
+❌ CLOSE CAMERA
 </button>
 
 

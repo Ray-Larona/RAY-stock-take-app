@@ -319,16 +319,26 @@ background:#006D6D !important;
 }
 
 .list-title .clear-btn{
+
     justify-self:start;
+
     background:transparent;
+
     color:#d32f2f;
+
     border:1px solid #d32f2f;
+
     border-radius:6px;
+
     padding:5px 10px;
+
     font-size:12px;
+
     cursor:pointer;
 
 }
+
+
 .list-title h2{
     margin:0;
     text-align:center;

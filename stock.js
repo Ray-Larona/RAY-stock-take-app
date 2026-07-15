@@ -105,20 +105,29 @@ function loadItems(){
 function addBarcode(barcode){
 
 
-  let found = stockItems.find(
+  let foundIndex = stockItems.findIndex(
     item => item.barcode == barcode
   );
 
 
-  if(found){
+  if(foundIndex !== -1){
 
-    found.qty += 1;
+
+    stockItems[foundIndex].qty += 1;
+
+
+    // ilipat sa taas ang scanned item
+
+    let item = stockItems.splice(foundIndex,1)[0];
+
+    stockItems.unshift(item);
+
 
 
   }else{
 
 
-    stockItems.push({
+    stockItems.unshift({
 
       barcode: barcode,
 
@@ -136,7 +145,6 @@ function addBarcode(barcode){
 
 
 }
-
 
 
 // SAVE PHONE STORAGE

@@ -10,6 +10,8 @@ function startScanner(){
 
   document.getElementById("cameraBox").style.display="block";
 
+  document.getElementById("closeCameraBtn").style.display="block";
+  
   document.getElementById("scanBtn").style.display="none";
 
 
@@ -136,26 +138,20 @@ function startScanner(){
 
 function stopScanner(){
 
-
   if(scanner){
-
 
     scanner.stop().then(()=>{
 
-
       document.getElementById("cameraBox").style.display="none";
 
+      document.getElementById("closeCameraBtn").style.display="none";
 
       document.getElementById("scanBtn").style.display="block";
 
-
       scanner.clear();
-
 
     });
 
-
   }
-
 
 }

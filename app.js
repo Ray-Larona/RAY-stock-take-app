@@ -188,10 +188,30 @@ function logout(){
 
   let token = localStorage.getItem("token");
 
-  if(!token){
-    window.location.href="index.html";
-    return;
+
+  const btn = document.querySelector(".logout-btn");
+
+
+  if(btn){
+
+    btn.disabled = true;
+
+    btn.innerHTML = "⏳ LOGGING OUT...";
+
   }
+
+
+
+  if(!token){
+
+    localStorage.clear();
+
+    window.location.href="index.html";
+
+    return;
+
+  }
+
 
 
   fetch(API_URL,{
@@ -201,36 +221,52 @@ function logout(){
     body:JSON.stringify({
 
       action:"logout",
+
       token:token
 
     })
 
   })
 
+
   .then(res=>res.json())
 
+
   .then(data=>{
+
 
     console.log("LOGOUT RESULT:",data);
 
 
+
     localStorage.clear();
 
 
+
     window.location.href="index.html";
+
 
 
   })
 
+
   .catch(err=>{
+
 
     console.log(err);
 
+
+
     localStorage.clear();
+
+
 
     window.location.href="index.html";
 
+
   });
+
+
 
 }
 

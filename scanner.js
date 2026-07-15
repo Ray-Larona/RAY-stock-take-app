@@ -3,7 +3,7 @@ let scanner;
 function startScanner(){
 
 
-document.getElementById("reader").style.display="block";
+document.getElementById("cameraBox").style.display="block";";
 
 document.getElementById("scanBtn").style.display="none";
 document.getElementById("closeScanBtn").style.display="block";
@@ -105,11 +105,7 @@ function stopScanner(){
 
     scanner.stop().then(()=>{
 
-      document.getElementById("reader").style.display="none";
-
-      document.getElementById("scanBtn").style.display="block";
-
-      document.getElementById("closeScanBtn").style.display="none";
+      document.getElementById("cameraBox").style.display="none";
 
     });
 

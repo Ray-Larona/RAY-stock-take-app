@@ -1,172 +1,181 @@
-let scanner;
+<!DOCTYPE html>
+<html>
 
+<head>
 
-// ===============================
-// START BARCODE SCANNER
-// ===============================
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-function startScanner(){
+<title>Stock Take</title>
 
+<link rel="stylesheet" href="style.css">
 
-  document.getElementById("cameraBox").style.display = "block";
+</head>
 
-  document.getElementById("closeCameraBtn").style.display = "block";
 
-  document.getElementById("scanBtn").style.display = "none";
+<body>
 
 
-  scanner = new Html5Qrcode("reader");
+<div class="container">
 
 
+<h1>📦 STOCK TAKE</h1>
 
-  Html5Qrcode.getCameras().then(cameras => {
 
+<h3 id="user"></h3>
 
-    if(cameras && cameras.length){
 
+<p>
+Session:
+<br>
+<b id="session">Loading...</b>
+</p>
 
-      let cameraId = cameras[0].id;
 
+<hr>
 
 
-      // SELECT BACK CAMERA
+<h2>📍 LOCATION</h2>
 
-      for(let cam of cameras){
 
-        let label = cam.label.toLowerCase();
+<input 
+type="text" 
+id="locationInput"
+placeholder="Enter Location">
 
-        if(
-          label.includes("back") ||
-          label.includes("rear") ||
-          label.includes("environment")
-        ){
 
-          cameraId = cam.id;
+<div class="location-buttons">
 
-          break;
 
-        }
+<button onclick="setLocation()">
+SET LOCATION
+</button>
 
-      }
 
+<button onclick="startLocationScanner()">
+📷 SCAN LOCATION
+</button>
 
 
-      scanner.start(
+</div>
 
-        cameraId,
 
-        {
 
-          fps:10,
+<p>
+Current Location:
+<br>
+<b id="currentLocation">---</b>
+</p>
 
-          qrbox:250,
 
-          aspectRatio:1.777
 
-        },
+<hr>
 
 
-        (decodedText)=>{
 
+<!-- CAMERA -->
 
-          console.log("SCAN:", decodedText);
+<div id="cameraBox" 
+style="position:relative; width:300px; display:none; margin:auto;">
 
 
+  <div id="reader" style="width:300px;"></div>
 
-          // BEEP
 
-          let beep = new Audio(
-            "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
-          );
 
-          beep.play();
+  <button
+  id="closeCameraBtn"
+  onclick="stopScanner()"
+  style="
+  display:none;
+  position:absolute;
+  right:5px;
+  top:5px;
+  z-index:9999;
+  border:none;
+  background:none;
+  color:red;
+  font-size:30px;
+  font-weight:bold;
+  padding:0;
+  width:35px;
+  height:35px;
+  cursor:pointer;">
+  X
+  </button>
 
 
+</div>
 
-          // SHOW BARCODE
 
-          document.getElementById("barcode").innerHTML =
-          decodedText;
 
 
+<button id="scanBtn" class="scan-btn" onclick="startScanner()">
+▌║│▌║▌│║ START SCAN
+</button>
 
-          // ADD ITEM
 
-          addBarcode(decodedText);
 
+<p>
+Barcode:
+<b id="barcode">---</b>
+</p>
 
 
-          console.log("ADDED:", decodedText);
 
+<h2>📋 List</h2>
 
 
-          // AUTO CLOSE AFTER SUCCESS SCAN
+<div id="itemList"></div>
 
-          scanner.stop().then(()=>{
 
 
-            document.getElementById("cameraBox").style.display="none";
+<h3>
+Total:
+<span id="total">0</span>
+</h3>
 
-            document.getElementById("closeCameraBtn").style.display="none";
 
-            document.getElementById("scanBtn").style.display="block";
+<br>
 
 
-          });
+<button id="uploadBtn" onclick="uploadStockTake()">
+📤 UPLOAD LOCATION
+</button>
 
 
 
-        }
+<div class="logout-area">
 
+<button class="logout-btn" onclick="logout()">
+LOGOUT
+</button>
 
-      );
+</div>
 
 
-    }
 
+<p id="message"></p>
 
-  }).catch(error=>{
 
-    console.log("CAMERA ERROR:",error);
 
-  });
+</div>
 
 
-}
 
 
+<!-- SCRIPTS -->
 
+<script src="app.js"></script>
 
+<script src="https://unpkg.com/html5-qrcode"></script>
 
-// ===============================
-// CLOSE CAMERA X
-// ===============================
+<script src="scanner.js"></script>
 
-function stopScanner(){
+<script src="stock.js"></script>
 
+<script src="upload.js"></script>
 
-  if(scanner){
 
+</body>
 
-    scanner.stop().then(()=>{
-
-
-      document.getElementById("cameraBox").style.display="none";
-
-
-      document.getElementById("closeCameraBtn").style.display="none";
-
-
-      document.getElementById("scanBtn").style.display="block";
-
-
-      scanner.clear();
-
-
-    });
-
-
-  }
-
-
-}
+</html>

@@ -5,6 +5,9 @@ function startScanner(){
 
 document.getElementById("reader").style.display="block";
 
+document.getElementById("scanBtn").style.display="none";
+document.getElementById("closeScanBtn").style.display="block";
+
 
 scanner = new Html5Qrcode("reader");
 
@@ -98,11 +101,18 @@ scanner.stop();
 
 function stopScanner(){
 
+  if(scanner){
 
-if(scanner){
+    scanner.stop().then(()=>{
 
-scanner.stop();
+      document.getElementById("reader").style.display="none";
 
-}
+      document.getElementById("scanBtn").style.display="block";
+
+      document.getElementById("closeScanBtn").style.display="none";
+
+    });
+
+  }
 
 }

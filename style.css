@@ -61,7 +61,7 @@ border:1px solid #ccc;
 
 
 
-/* MAIN BUTTON */
+/* ALL MAIN BUTTON */
 
 button{
 
@@ -127,7 +127,33 @@ margin:auto;
 
 
 
-/* ITEM LIST */
+/* MANUAL BARCODE */
+
+.manual-input{
+
+display:flex;
+
+gap:10px;
+
+}
+
+
+.manual-input input{
+
+flex:1;
+
+}
+
+
+.manual-input button{
+
+width:120px;
+
+}
+
+
+
+/* LIST */
 
 #itemList{
 
@@ -153,7 +179,6 @@ font-size:14px;
 }
 
 
-
 .barcode{
 
 flex:1;
@@ -169,7 +194,6 @@ text-overflow:ellipsis;
 }
 
 
-
 .qty-control{
 
 display:flex;
@@ -181,6 +205,8 @@ gap:3px;
 }
 
 
+
+/* PLUS MINUS */
 
 .qty-control button,
 button.qty-btn,
@@ -252,7 +278,6 @@ margin-top:25px;
 }
 
 
-
 .logout-btn{
 
 width:50% !important;
@@ -297,7 +322,6 @@ margin-bottom:10px;
 }
 
 
-
 .list-title h2{
 
 margin:0;
@@ -310,7 +334,7 @@ text-align:center;
 
 /* CLEAR BUTTON */
 
-.list-title .clear-btn{
+button.clear-btn{
 
 justify-self:start;
 
@@ -318,7 +342,13 @@ width:auto !important;
 
 height:30px !important;
 
+min-height:30px !important;
+
+max-height:30px !important;
+
 padding:4px 10px !important;
+
+margin:0 !important;
 
 background:transparent !important;
 
@@ -332,15 +362,24 @@ font-size:12px !important;
 
 font-weight:bold;
 
-cursor:pointer;
+line-height:normal !important;
+
+}
+
+
+button.clear-btn:hover{
+
+background:#fff0f0 !important;
 
 }
 
 
 
-.list-title .clear-btn:hover{
+/* UPLOAD BUTTON */
 
-background:#fff0f0 !important;
+#uploadBtn{
+
+margin-top:10px;
 
 }
 
@@ -349,6 +388,7 @@ background:#fff0f0 !important;
 /* MOBILE */
 
 @media(max-width:600px){
+
 
 .container{
 
@@ -369,5 +409,20 @@ h2{
 font-size:20px;
 
 }
+
+
+.manual-input{
+
+flex-direction:column;
+
+}
+
+
+.manual-input button{
+
+width:100%;
+
+}
+
 
 }

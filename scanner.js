@@ -116,14 +116,13 @@ function startScanner(){
 
   }).catch(error=>{
 
+  console.log("CAMERA ERROR:",error);
 
-    console.log("CAMERA ERROR:",error);
+  alert(
+    "CAMERA ERROR:\n\n" + error
+  );
 
-    alert("Camera Error: " + error);
-
-
-  });
-
+});
 
 }
 

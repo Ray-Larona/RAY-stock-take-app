@@ -19,124 +19,110 @@ function startScanner(){
 
 
 
-  Html5Qrcode.getCameras().then(cameras => {
+  scanner.start(
+
+    {
+      facingMode:"environment"
+    },
 
 
-    if(cameras && cameras.length){
+    {
+
+      fps:10,
 
 
-      let cameraId = cameras[cameras.length - 1].id;
+      qrbox:function(viewfinderWidth, viewfinderHeight){
 
 
-
-      // FIND BACK CAMERA
-
-      for(let cam of cameras){
-
-        let label = cam.label.toLowerCase();
+        let width = Math.min(
+          Math.floor(viewfinderWidth * 0.9),
+          350
+        );
 
 
-        if(
-          label.includes("back") ||
-          label.includes("rear") ||
-          label.includes("environment")
-        ){
+        return {
 
-          cameraId = cam.id;
+          width:width,
 
-          break;
+          height:Math.floor(width * 0.45)
 
-        }
-
-      }
+        };
 
 
-
-      scanner.start(
-
-        cameraId,
-
-        
-       {
-        fps:15,
-      
-        qrbox:250,
-      
-        aspectRatio:1.777
       },
 
 
-        (decodedText)=>{
+      aspectRatio:1.777
+
+    },
 
 
-          console.log("SCAN:", decodedText);
+    (decodedText)=>{
 
 
-
-          // BEEP
-
-          let beep = new Audio(
-            "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
-          );
-
-          beep.play();
+      console.log("SCAN:", decodedText);
 
 
 
-          // SHOW BARCODE
+      // BEEP
 
-          document.getElementById("barcode").innerHTML =
-          decodedText;
+      let beep = new Audio(
+        "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+      );
 
-
-
-          // ADD ITEM
-
-          addBarcode(decodedText);
+      beep.play();
 
 
 
-          console.log("ADDED:", decodedText);
+      // SHOW BARCODE
+
+      document.getElementById("barcode").innerHTML =
+      decodedText;
 
 
 
-          // STOP AFTER SUCCESS SCAN
+      // ADD ITEM
 
-          scanner.stop().then(()=>{
-
-
-            document.getElementById("cameraBox").style.display="none";
-
-
-            document.getElementById("closeCameraBtn").style.display="none";
-
-
-            document.getElementById("scanBtn").style.display="block";
-
-
-          });
+      addBarcode(decodedText);
 
 
 
-        }
+      console.log("ADDED:", decodedText);
 
 
-      ).then(()=>{
+
+      // AUTO CLOSE AFTER SUCCESS SCAN
+
+      scanner.stop().then(()=>{
 
 
-        // SHOW X ONLY AFTER CAMERA STARTS
+        document.getElementById("cameraBox").style.display="none";
 
-        document.getElementById("closeCameraBtn").style.display="block";
+
+        document.getElementById("closeCameraBtn").style.display="none";
+
+
+        document.getElementById("scanBtn").style.display="block";
 
 
       });
 
 
-
     }
 
 
-  }).catch(error=>{
+  ).then(()=>{
+
+
+    // CAMERA START SUCCESS
+
+    document.getElementById("closeCameraBtn").style.display="block";
+
+
+  })
+
+
+  .catch(error=>{
 
 
     console.log("CAMERA ERROR:",error);

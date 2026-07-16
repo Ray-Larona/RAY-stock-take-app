@@ -57,9 +57,15 @@ function startScanner(){
         cameraId,
 
         {
-          fps:10,
-          qrbox:250,
-          aspectRatio:1.777
+      fps:15,
+    
+      qrbox:{
+        width:300,
+        height:300
+      },
+    
+      aspectRatio:1
+
         },
 
 

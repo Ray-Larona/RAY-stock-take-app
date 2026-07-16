@@ -15,11 +15,34 @@ function startScanner(){
   document.getElementById("scanBtn").style.display = "none";
 
 
-  scanner = new Html5Qrcode("reader");
+  scanner = new Html5Qrcode("reader", {
+
+    formatsToSupport:[
+
+      Html5QrcodeSupportedFormats.EAN_13,
+
+      Html5QrcodeSupportedFormats.EAN_8,
+
+      Html5QrcodeSupportedFormats.UPC_A,
+
+      Html5QrcodeSupportedFormats.UPC_E,
+
+      Html5QrcodeSupportedFormats.CODE_128,
+
+      Html5QrcodeSupportedFormats.CODE_39,
+
+      Html5QrcodeSupportedFormats.QR_CODE
+
+    ],
+
+    verbose:false
+
+  });
 
 
 
   scanner.start(
+
 
     {
       facingMode:"environment"
@@ -27,6 +50,7 @@ function startScanner(){
 
 
     {
+
 
       fps:10,
 
@@ -49,10 +73,8 @@ function startScanner(){
         };
 
 
-      },
+      }
 
-
-      aspectRatio:1.777
 
     },
 
@@ -60,7 +82,7 @@ function startScanner(){
     (decodedText)=>{
 
 
-      console.log("SCAN:", decodedText);
+      console.log("SCAN:",decodedText);
 
 
 
@@ -87,11 +109,11 @@ function startScanner(){
 
 
 
-      console.log("ADDED:", decodedText);
+      console.log("ADDED:",decodedText);
 
 
 
-      // AUTO CLOSE AFTER SUCCESS SCAN
+      // STOP AFTER SUCCESS SCAN
 
       scanner.stop().then(()=>{
 
@@ -108,13 +130,24 @@ function startScanner(){
       });
 
 
+
+    },
+
+
+    function(){
+
+
+      // ignore scan misses
+
+
     }
 
 
-  ).then(()=>{
+  )
 
 
-    // CAMERA START SUCCESS
+  .then(()=>{
+
 
     document.getElementById("closeCameraBtn").style.display="block";
 
@@ -129,7 +162,7 @@ function startScanner(){
 
 
     alert(
-      "CAMERA ERROR:\n\n" + error
+      "Camera unavailable:\n\n" + error
     );
 
 

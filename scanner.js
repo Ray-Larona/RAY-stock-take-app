@@ -10,7 +10,7 @@ function startScanner(){
 
   document.getElementById("cameraBox").style.display = "block";
 
-  document.getElementById("closeCameraBtn").style.display = "block";
+  document.getElementById("closeCameraBtn").style.display = "none";
 
   document.getElementById("scanBtn").style.display = "none";
 
@@ -19,65 +19,93 @@ function startScanner(){
 
 
 
-  scanner.start(
+  Html5Qrcode.getCameras().then(cameras => {
 
-    {
-      facingMode:{
-        ideal:"environment"
+
+    if(cameras && cameras.length){
+
+
+      let cameraId = cameras[cameras.length - 1].id;
+
+
+
+      // TRY TO FIND BACK CAMERA
+
+      for(let cam of cameras){
+
+        let label = cam.label.toLowerCase();
+
+
+        if(
+          label.includes("back") ||
+          label.includes("rear") ||
+          label.includes("environment")
+        ){
+
+          cameraId = cam.id;
+
+          break;
+
+        }
+
       }
-    },
-
-    {
-      fps:10,
-      qrbox:250,
-      aspectRatio:1.777
-    },
-
-
-    (decodedText)=>{
-
-
-      console.log("SCAN:", decodedText);
 
 
 
-      // BEEP
+      scanner.start(
 
-      let beep = new Audio(
-        "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
-      );
+        cameraId,
 
-      beep.play();
-
-
-
-      // SHOW BARCODE
-
-      document.getElementById("barcode").innerHTML =
-      decodedText;
+        {
+          fps:10,
+          qrbox:250,
+          aspectRatio:1.777
+        },
 
 
-
-      // ADD ITEM
-
-      addBarcode(decodedText);
+        (decodedText)=>{
 
 
-
-      console.log("ADDED:", decodedText);
-
+          console.log("SCAN:",decodedText);
 
 
-      // AUTO CLOSE AFTER SUCCESS SCAN
+          let beep = new Audio(
+            "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+          );
 
-      scanner.stop().then(()=>{
+          beep.play();
 
 
-        document.getElementById("cameraBox").style.display="none";
+          document.getElementById("barcode").innerHTML =
+          decodedText;
 
-        document.getElementById("closeCameraBtn").style.display="none";
 
-        document.getElementById("scanBtn").style.display="block";
+          addBarcode(decodedText);
+
+
+
+          scanner.stop().then(()=>{
+
+
+            document.getElementById("cameraBox").style.display="none";
+
+            document.getElementById("closeCameraBtn").style.display="none";
+
+            document.getElementById("scanBtn").style.display="block";
+
+
+          });
+
+
+        }
+
+
+      ).then(()=>{
+
+
+        // CAMERA STARTED SUCCESSFULLY
+
+        document.getElementById("closeCameraBtn").style.display="block";
 
 
       });
@@ -86,17 +114,18 @@ function startScanner(){
     }
 
 
-  ).catch(error=>{
+  }).catch(error=>{
+
 
     console.log("CAMERA ERROR:",error);
+
+    alert("Camera Error: " + error);
+
 
   });
 
 
 }
-
-
-
 
 
 // ===============================

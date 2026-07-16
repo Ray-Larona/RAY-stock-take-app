@@ -29,7 +29,7 @@ function startScanner(){
 
 
 
-      // TRY TO FIND BACK CAMERA
+      // FIND BACK CAMERA
 
       for(let cam of cameras){
 
@@ -56,15 +56,19 @@ function startScanner(){
 
         cameraId,
 
+
         {
-      fps:15,
-    
-      qrbox:{
-        width:300,
-        height:300
-      },
-    
-      aspectRatio:1
+
+          fps:20,
+
+
+          qrbox:{
+            width:320,
+            height:160
+          },
+
+
+          aspectRatio:1.777
 
         },
 
@@ -72,8 +76,11 @@ function startScanner(){
         (decodedText)=>{
 
 
-          console.log("SCAN:",decodedText);
+          console.log("SCAN:", decodedText);
 
+
+
+          // BEEP
 
           let beep = new Audio(
             "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
@@ -82,25 +89,40 @@ function startScanner(){
           beep.play();
 
 
+
+          // SHOW BARCODE
+
           document.getElementById("barcode").innerHTML =
           decodedText;
 
 
+
+          // ADD ITEM
+
           addBarcode(decodedText);
 
 
+
+          console.log("ADDED:", decodedText);
+
+
+
+          // STOP AFTER SUCCESS SCAN
 
           scanner.stop().then(()=>{
 
 
             document.getElementById("cameraBox").style.display="none";
 
+
             document.getElementById("closeCameraBtn").style.display="none";
+
 
             document.getElementById("scanBtn").style.display="block";
 
 
           });
+
 
 
         }
@@ -109,7 +131,7 @@ function startScanner(){
       ).then(()=>{
 
 
-        // CAMERA STARTED SUCCESSFULLY
+        // SHOW X ONLY AFTER CAMERA STARTS
 
         document.getElementById("closeCameraBtn").style.display="block";
 
@@ -117,20 +139,28 @@ function startScanner(){
       });
 
 
+
     }
 
 
   }).catch(error=>{
 
-  console.log("CAMERA ERROR:",error);
 
-  alert(
-    "CAMERA ERROR:\n\n" + error
-  );
+    console.log("CAMERA ERROR:",error);
 
-});
+
+    alert(
+      "CAMERA ERROR:\n\n" + error
+    );
+
+
+  });
+
 
 }
+
+
+
 
 
 // ===============================

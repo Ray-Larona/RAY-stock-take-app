@@ -122,7 +122,11 @@ cameraBox.classList.add("scanner-mode");
       scanner.stop().then(()=>{
 
 
-        document.getElementById("cameraBox").style.display="none";
+        let cameraBox = document.getElementById("cameraBox");
+
+        cameraBox.classList.remove("scanner-mode");
+
+        cameraBox.style.display="none";
 
 
         document.getElementById("closeCameraBtn").style.display="none";
@@ -192,7 +196,11 @@ function stopScanner(){
     scanner.stop().then(()=>{
 
 
-      document.getElementById("cameraBox").style.display="none";
+      let cameraBox = document.getElementById("cameraBox");
+
+    cameraBox.classList.remove("scanner-mode");
+
+    cameraBox.style.display="none";
 
 
       document.getElementById("closeCameraBtn").style.display="none";

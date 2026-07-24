@@ -8,7 +8,11 @@ let scanner;
 function startScanner(){
 
 
-  document.getElementById("cameraBox").style.display = "block";
+  let cameraBox = document.getElementById("cameraBox");
+
+cameraBox.style.display = "block";
+
+cameraBox.classList.add("scanner-mode");
 
   document.getElementById("closeCameraBtn").style.display = "none";
 

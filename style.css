@@ -115,12 +115,16 @@ flex:1;
 
 }
 
-
-/* =========================
-   FULL SCREEN CAMERA MODE
-========================= */
+/* CAMERA */
 
 #cameraBox{
+
+margin:auto;
+
+}
+/* FULL SCREEN SCANNER MODE */
+
+#cameraBox.scanner-mode{
 
     position:fixed;
 
@@ -134,13 +138,41 @@ flex:1;
 
     z-index:99999;
 
-    display:none;
-
-    overflow:hidden;
+    margin:0;
 
 }
 
 
+#cameraBox.scanner-mode #reader{
+
+    width:100% !important;
+    height:100% !important;
+
+}
+
+
+#cameraBox.scanner-mode video{
+
+    width:100% !important;
+    height:100% !important;
+
+    object-fit:cover;
+
+}
+
+
+#cameraBox.scanner-mode #closeCameraBtn{
+
+    display:block !important;
+
+    position:absolute;
+
+    top:20px;
+    right:20px;
+
+    z-index:100000;
+
+}
 /* CAMERA VIDEO */
 
 #reader{

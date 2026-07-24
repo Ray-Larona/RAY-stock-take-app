@@ -116,15 +116,80 @@ flex:1;
 }
 
 
-
-/* CAMERA */
+/* =========================
+   FULL SCREEN CAMERA MODE
+========================= */
 
 #cameraBox{
 
-margin:auto;
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100vw;
+    height:100vh;
+
+    background:black;
+
+    z-index:99999;
+
+    display:none;
+
+    overflow:hidden;
 
 }
 
+
+/* CAMERA VIDEO */
+
+#reader{
+
+    width:100% !important;
+    height:100% !important;
+
+}
+
+
+/* FORCE VIDEO FULL SCREEN */
+
+#reader video{
+
+    width:100% !important;
+    height:100% !important;
+
+    object-fit:cover !important;
+
+}
+
+
+/* CLOSE CAMERA BUTTON */
+
+#closeCameraBtn{
+
+    position:absolute;
+
+    top:20px;
+    right:20px;
+
+    z-index:100000;
+
+    width:50px !important;
+    height:50px !important;
+
+    padding:0 !important;
+
+    border-radius:50%;
+
+    background:#E53935 !important;
+
+    color:white;
+
+    font-size:25px;
+
+    line-height:50px;
+
+}
 
 
 /* MANUAL BARCODE */

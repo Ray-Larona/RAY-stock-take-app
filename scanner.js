@@ -10,11 +10,10 @@ function startScanner(){
 
   document.getElementById("cameraBox").style.display = "block";
 
-document.body.style.overflow = "hidden";
+  document.getElementById("closeCameraBtn").style.display = "none";
 
-document.getElementById("closeCameraBtn").style.display = "block";
+  document.getElementById("scanBtn").style.display = "none";
 
-document.getElementById("scanBtn").style.display = "none";
 
   scanner = new Html5Qrcode("reader", {
 
@@ -121,8 +120,6 @@ document.getElementById("scanBtn").style.display = "none";
 
         document.getElementById("cameraBox").style.display="none";
 
-        document.body.style.overflow = "auto";
-
 
         document.getElementById("closeCameraBtn").style.display="none";
 
@@ -152,8 +149,7 @@ document.getElementById("scanBtn").style.display = "none";
   .then(()=>{
 
 
-  console.log("CAMERA READY");
-
+    document.getElementById("closeCameraBtn").style.display="block";
 
 
   })
@@ -193,8 +189,6 @@ function stopScanner(){
 
 
       document.getElementById("cameraBox").style.display="none";
-
-      document.body.style.overflow = "auto";
 
 
       document.getElementById("closeCameraBtn").style.display="none";

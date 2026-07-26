@@ -115,64 +115,7 @@ flex:1;
 
 }
 
-/* CAMERA */
 
-#cameraBox{
-
-margin:auto;
-
-}
-/* FULL SCREEN SCANNER MODE */
-
-#cameraBox.scanner-mode{
-
-    position:fixed;
-
-    top:0;
-    left:0;
-
-    width:100vw;
-    height:100vh;
-
-    background:black;
-
-    z-index:99999;
-
-    margin:0;
-
-}
-
-
-#cameraBox.scanner-mode #reader{
-
-    width:100% !important;
-    height:100% !important;
-
-}
-
-
-#cameraBox.scanner-mode video{
-
-    width:100% !important;
-    height:100% !important;
-
-    object-fit:cover;
-
-}
-
-
-#cameraBox.scanner-mode #closeCameraBtn{
-
-    display:block !important;
-
-    position:absolute;
-
-    top:20px;
-    right:20px;
-
-    z-index:100000;
-
-}
 /* CAMERA VIDEO */
 
 #reader{

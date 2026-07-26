@@ -8,9 +8,7 @@ let scanner;
 function startScanner(){
 
 
-  let cameraBox = document.getElementById("cameraBox");
-
-cameraBox.classList.add("scanner-mode");
+  document.getElementById("cameraBox").style.display = "block";
 
   document.getElementById("closeCameraBtn").style.display = "none";
 
@@ -120,11 +118,7 @@ cameraBox.classList.add("scanner-mode");
       scanner.stop().then(()=>{
 
 
-        let cameraBox = document.getElementById("cameraBox");
-
-        cameraBox.classList.remove("scanner-mode");
-
-        cameraBox.style.display="none";
+        document.getElementById("cameraBox").style.display="none";
 
 
         document.getElementById("closeCameraBtn").style.display="none";
@@ -194,16 +188,13 @@ function stopScanner(){
     scanner.stop().then(()=>{
 
 
-      let cameraBox = document.getElementById("cameraBox");
-
-    cameraBox.classList.remove("scanner-mode");
+      document.getElementById("cameraBox").style.display="none";
 
 
+      document.getElementById("closeCameraBtn").style.display="none";
 
-      document.getElementById("closeCameraBtn").style.display = "none";
 
-
-      document.getElementById("scanBtn").style.display = "block";
+      document.getElementById("scanBtn").style.display="block";
 
 
       scanner.clear();

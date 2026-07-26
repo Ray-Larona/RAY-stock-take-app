@@ -10,8 +10,6 @@ function startScanner(){
 
   let cameraBox = document.getElementById("cameraBox");
 
-cameraBox.style.display = "flex";
-
 cameraBox.classList.add("scanner-mode");
 
   document.getElementById("closeCameraBtn").style.display = "none";

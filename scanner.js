@@ -200,13 +200,12 @@ function stopScanner(){
 
     cameraBox.classList.remove("scanner-mode");
 
-    cameraBox.style.display="none";
 
 
-      document.getElementById("closeCameraBtn").style.display="none";
+      document.getElementById("closeCameraBtn").style.display = "none";
 
 
-      document.getElementById("scanBtn").style.display="block";
+      document.getElementById("scanBtn").style.display = "block";
 
 
       scanner.clear();

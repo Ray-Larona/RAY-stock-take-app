@@ -558,3 +558,117 @@ margin-top:-5px;
 letter-spacing:1px;
 
 }
+
+/* ===== MODERN SCANNER OVERLAY ===== */
+
+#cameraBox{
+    position:fixed;
+    inset:0;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    background:rgba(0,0,0,.75);
+    z-index:99999;
+}
+
+#cameraBox.scanner-mode{
+    display:flex !important;
+}
+
+#reader{
+    width:100%;
+    height:100%;
+}
+
+#reader video{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+}
+
+/* Scanner Box */
+.scan-frame{
+    position:absolute;
+    width:320px;
+    height:150px;
+    border:2px solid rgba(255,255,255,.25);
+    border-radius:12px;
+    pointer-events:none;
+}
+
+/* Corners */
+.corner{
+    position:absolute;
+    width:35px;
+    height:35px;
+    border:5px solid #00ff55;
+}
+
+.tl{
+    top:-3px;
+    left:-3px;
+    border-right:none;
+    border-bottom:none;
+}
+
+.tr{
+    top:-3px;
+    right:-3px;
+    border-left:none;
+    border-bottom:none;
+}
+
+.bl{
+    bottom:-3px;
+    left:-3px;
+    border-right:none;
+    border-top:none;
+}
+
+.br{
+    bottom:-3px;
+    right:-3px;
+    border-left:none;
+    border-top:none;
+}
+
+/* Moving laser */
+.scan-line{
+    position:absolute;
+    left:8px;
+    right:8px;
+    height:3px;
+    background:#00ff55;
+    animation:laser 1.8s linear infinite;
+}
+
+@keyframes laser{
+
+0%{
+top:8px;
+}
+
+100%{
+top:138px;
+}
+
+}
+
+.scanner-title{
+    position:absolute;
+    top:40px;
+    left:50%;
+    transform:translateX(-50%);
+    color:white;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.scanner-tip{
+    position:absolute;
+    bottom:60px;
+    left:50%;
+    transform:translateX(-50%);
+    color:white;
+    font-size:16px;
+}

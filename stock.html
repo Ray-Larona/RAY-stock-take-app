@@ -1,202 +1,132 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Stock Take</title>
-
-<link rel="stylesheet" href="style.css">
-
-</head>
-
-
 <body>
 
+<div class="app">
 
-<div class="container">
+    <!-- HEADER -->
 
+    <div class="header">
 
-<h1>
-  📦 STOCK TAKE
-  <br>
-  <span class="rntl">by: RNTL</span>
-</h1>
+        <div class="logo">
+            📦
+        </div>
 
-<h3 id="user"></h3>
+        <div class="title-area">
 
+            <h1>Stock Take Pro</h1>
 
-<p>
-Session:
-<br>
-<b id="session">Loading...</b>
-</p>
+            <p>by RNTL</p>
 
+        </div>
 
-<hr>
+    </div>
 
+    <!-- LOCATION -->
 
-<h2>📍 LOCATION</h2>
+    <div class="card">
 
+        <label class="label">
+            Select Location
+        </label>
 
-<input 
-type="text" 
-id="locationInput"
-placeholder="Enter Location">
+        <div class="location-buttons">
 
+            <button id="locationA">
+                Warehouse A
+            </button>
 
-<div class="location-buttons">
+            <button id="locationB">
+                Warehouse B
+            </button>
 
+        </div>
 
-<button onclick="setLocation()">
-SET LOCATION
-</button>
+    </div>
 
+    <!-- ACTION BUTTONS -->
 
-<button onclick="startLocationScanner()">
-📷 SCAN LOCATION
-</button>
+    <div class="card">
 
+        <button
+            id="scanBtn"
+            class="scan-btn"
+            onclick="startScanner()">
 
-</div>
+            📷 SCAN BARCODE
 
+        </button>
 
+        <div class="manual-input">
 
-<p>
-Current Location:
-<br>
-<b id="currentLocation">---</b>
-</p>
+            <input
+                id="manualBarcode"
+                placeholder="Enter Barcode">
 
+            <button onclick="manualAdd()">
 
+                ADD
 
-<hr>
+            </button>
 
+        </div>
 
+        <button
+            id="uploadBtn">
 
-<!-- CAMERA -->
+            ☁ UPLOAD STOCK TAKE
 
-<div id="cameraBox" class="scanner-modal">
+        </button>
 
-   <div id="cameraBox">
+    </div>
+
+  <!-- ===========================
+     SCANNER
+=========================== -->
+
+<div id="cameraBox">
 
     <div id="reader"></div>
 
-    <div class="scanner-title">
-        SCAN BARCODE
+    <div class="scanner-overlay"></div>
+
+    <div class="scanner-card">
+
+        <div class="scanner-header">
+
+            <span>
+                SCAN BARCODE
+            </span>
+
+            <button
+                id="closeCameraBtn"
+                onclick="stopScanner()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div class="scanner-body">
+
+            <div class="scan-frame">
+
+                <div class="corner tl"></div>
+                <div class="corner tr"></div>
+                <div class="corner bl"></div>
+                <div class="corner br"></div>
+
+                <div class="scan-line"></div>
+
+            </div>
+
+        </div>
+
+        <div class="scanner-footer">
+
+            Point the camera at the barcode
+
+        </div>
+
     </div>
 
-    <div class="scan-frame">
-
-        <div class="corner tl"></div>
-        <div class="corner tr"></div>
-        <div class="corner bl"></div>
-        <div class="corner br"></div>
-
-        <div class="scan-line"></div>
-
-    </div>
-
-    <div class="scanner-tip">
-        Point the camera at the barcode
-    </div>
-
-    <button id="closeCameraBtn" onclick="stopScanner()">
-        ✕
-    </button>
-
 </div>
-  
-</div>
-
-<button id="scanBtn" class="scan-btn" onclick="startScanner()">
-▌║│▌║▌│║ START SCAN
-</button>
-
-<div class="manual-input">
-
-<input 
-type="text"
-id="manualBarcode"
-placeholder="Enter barcode">
-
-
-<button onclick="manualAddBarcode()">
-➕ ADD ITEM
-</button>
-
-</div>
- 
-<p>
-Barcode:
-<b id="barcode">---</b>
-</p>
-  
-<div class="list-title">
-
-  <button class="clear-btn" onclick="clearList()">
-    🗑️ Clear
-  </button>
-
-  <h2>📋 List</h2>
-
-  <span></span>
-
-</div>
-
-
-<div id="itemList"></div>
-
-
-
-<h3>
-Total:
-<span id="total">0</span>
-</h3>
-
-
-<br>
-
-
-<button id="uploadBtn" onclick="uploadStockTake()">
-📤 UPLOAD LIST
-</button>
-
-  
-
-<div class="logout-area">
-
-<button class="logout-btn" onclick="logout()">
-LOGOUT
-</button>
-
-</div>
-
-
-
-<p id="message"></p>
-
-
-
-</div>
-
-
-
-
-<!-- SCRIPTS -->
-
-<script src="app.js"></script>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
-
-<script src="scanner.js"></script>
-
-<script src="stock.js"></script>
-
-<script src="upload.js"></script>
-
-
-</body>
-
-</html>

@@ -1,98 +1,204 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
 
-    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Take</title>
 
-    <title>RNTL Stock Take Pro</title>
-
-    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 
 </head>
 
+
 <body>
+
 
 <div class="container">
 
-    <div class="header">
 
-        <div class="logo">📦</div>
+<h1>
+  📦 STOCK TAKE
+  <br>
+  <span class="rntl">by: RNTL</span>
+</h1>
 
-        <h1>Stock Take Pro</h1>
+<h3 id="user"></h3>
 
-        <p>by RNTL</p>
 
-    </div>
+<p>
+Session:
+<br>
+<b id="session">Loading...</b>
+</p>
 
-    <button
-        id="scanBtn"
-        class="scan-btn"
-        onclick="startScanner()">
 
-        📷 SCAN BARCODE
+<hr>
 
-    </button>
+
+<h2>📍 LOCATION</h2>
+
+
+<input 
+type="text" 
+id="locationInput"
+placeholder="Enter Location">
+
+
+<div class="location-buttons">
+
+
+<button onclick="setLocation()">
+SET LOCATION
+</button>
+
+
+<button onclick="startLocationScanner()">
+📷 SCAN LOCATION
+</button>
+
 
 </div>
 
+
+
+<p>
+Current Location:
+<br>
+<b id="currentLocation">---</b>
+</p>
+
+
+
+<hr>
+
+
+
+<!-- CAMERA -->
+
+<div id="cameraBox" 
+style="position:relative; width:300px; display:none; margin:auto;">
+
+
+  <div id="reader" style="width:300px;"></div>
+
+
+
+  <button
+  id="closeCameraBtn"
+  onclick="stopScanner()"
+  style="
+  display:none;
+  position:absolute;
+  right:5px;
+  top:5px;
+  z-index:9999;
+  border:none;
+  background:none;
+  color:red;
+  font-size:30px;
+  font-weight:bold;
+  padding:0;
+  width:35px;
+  height:35px;
+  cursor:pointer;">
+  X
+  </button>
+
+
+</div>
+
+
+
+
+<button id="scanBtn" class="scan-btn" onclick="startScanner()">
+▌║│▌║▌│║ START SCAN
+</button>
+
+<div class="manual-input">
+
+<input 
+type="text"
+id="manualBarcode"
+placeholder="Enter barcode">
+
+
+<button onclick="manualAddBarcode()">
+➕ ADD ITEM
+</button>
+
+</div>
+ 
+<p>
+Barcode:
+<b id="barcode">---</b>
+</p>
+  
+<div class="list-title">
+
+  <button class="clear-btn" onclick="clearList()">
+    🗑️ Clear
+  </button>
+
+  <h2>📋 List</h2>
+
+  <span></span>
+
+</div>
+
+
+<div id="itemList"></div>
+
+
+
+<h3>
+Total:
+<span id="total">0</span>
+</h3>
+
+
+<br>
+
+
+<button id="uploadBtn" onclick="uploadStockTake()">
+📤 UPLOAD LIST
+</button>
+
+  
+
+<div class="logout-area">
+
+<button class="logout-btn" onclick="logout()">
+LOGOUT
+</button>
+
+</div>
+
+
+
+<p id="message"></p>
+
+
+
+</div>
+
+
+
+
+<!-- SCRIPTS -->
+
+<script src="app.js"></script>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
 <script src="scanner.js"></script>
+
 <script src="stock.js"></script>
+
 <script src="upload.js"></script>
+
 
 </body>
 
 </html>
-
-<!-- ==========================
-     SCANNER
-========================== -->
-
-<div id="cameraBox">
-
-    <div id="reader"></div>
-
-    <div class="scanner-overlay"></div>
-
-    <div class="scanner-card">
-
-        <div class="scanner-header">
-
-            <span>SCAN BARCODE</span>
-
-            <button
-                id="closeCameraBtn"
-                onclick="stopScanner()">
-
-                ✕
-
-            </button>
-
-        </div>
-
-        <div class="scanner-body">
-
-            <div class="scan-frame">
-
-                <div class="corner tl"></div>
-                <div class="corner tr"></div>
-                <div class="corner bl"></div>
-                <div class="corner br"></div>
-
-                <div class="scan-line"></div>
-
-            </div>
-
-        </div>
-
-        <div class="scanner-footer">
-
-            Point the camera at the barcode
-
-        </div>
-
-    </div>
-
-</div>

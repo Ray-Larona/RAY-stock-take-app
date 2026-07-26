@@ -1,86 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RNTL Stock Take Pro</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
 <body>
 
-<div class="app">
-
-    <!-- HEADER -->
+<div class="container">
 
     <div class="header">
 
-        <div class="logo">
-            📦
-        </div>
+        <div class="logo">📦</div>
 
-        <div class="title-area">
+        <h1>Stock Take Pro</h1>
 
-            <h1>Stock Take Pro</h1>
-
-            <p>by RNTL</p>
-
-        </div>
+        <p>by RNTL</p>
 
     </div>
 
-    <!-- LOCATION -->
+    <button
+        id="scanBtn"
+        class="scan-btn"
+        onclick="startScanner()">
 
-    <div class="card">
+        📷 SCAN BARCODE
 
-        <label class="label">
-            Select Location
-        </label>
+    </button>
 
-        <div class="location-buttons">
+</div>
 
-            <button id="locationA">
-                Warehouse A
-            </button>
+<script src="scanner.js"></script>
+<script src="stock.js"></script>
+<script src="upload.js"></script>
 
-            <button id="locationB">
-                Warehouse B
-            </button>
+</body>
 
-        </div>
+</html>
 
-    </div>
-
-    <!-- ACTION BUTTONS -->
-
-    <div class="card">
-
-        <button
-            id="scanBtn"
-            class="scan-btn"
-            onclick="startScanner()">
-
-            📷 SCAN BARCODE
-
-        </button>
-
-        <div class="manual-input">
-
-            <input
-                id="manualBarcode"
-                placeholder="Enter Barcode">
-
-            <button onclick="manualAdd()">
-
-                ADD
-
-            </button>
-
-        </div>
-
-        <button
-            id="uploadBtn">
-
-            ☁ UPLOAD STOCK TAKE
-
-        </button>
-
-    </div>
-
-  <!-- ===========================
+<!-- ==========================
      SCANNER
-=========================== -->
+========================== -->
 
 <div id="cameraBox">
 
@@ -92,9 +60,7 @@
 
         <div class="scanner-header">
 
-            <span>
-                SCAN BARCODE
-            </span>
+            <span>SCAN BARCODE</span>
 
             <button
                 id="closeCameraBtn"

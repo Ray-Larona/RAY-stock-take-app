@@ -415,38 +415,53 @@ function changeScanMode(){
 // BLUETOOTH BARCODE INPUT
 // ===============================
 
-document
-.getElementById("bluetoothInput")
-.addEventListener("keydown", function(e){
+window.addEventListener("load", function(){
+
+    let bluetoothInput = document.getElementById(
+        "bluetoothInput"
+    );
 
 
-    if(e.key === "Enter"){
+    if(bluetoothInput){
 
 
-        let barcode = this.value.trim();
+        bluetoothInput.addEventListener(
+            "keydown",
+            function(e){
 
 
-
-        if(barcode){
-
-
-            console.log(
-                "BLUETOOTH SCAN:",
-                barcode
-            );
+                if(e.key === "Enter"){
 
 
-            addBarcode(barcode);
+                    let barcode = this.value.trim();
 
 
-        }
+                    if(barcode){
 
 
+                        console.log(
+                            "BLUETOOTH SCAN:",
+                            barcode
+                        );
 
-        this.value="";
+
+                        addBarcode(barcode);
 
 
-        this.focus();
+                    }
+
+
+                    this.value="";
+
+
+                    this.focus();
+
+
+                }
+
+
+            }
+        );
 
 
     }

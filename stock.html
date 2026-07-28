@@ -24,6 +24,7 @@
   <span class="rntl">by: RNTL</span>
 </h1>
 
+
 <h3 id="user"></h3>
 
 
@@ -68,7 +69,6 @@ Current Location:
 <br>
 <b id="currentLocation">---</b>
 </p>
-
 
 
 <hr>
@@ -116,17 +116,62 @@ style="position:relative; width:300px; display:none; margin:auto;">
 ▌║│▌║▌│║ START SCAN
 </button>
 
+
+
+
+<!-- SCAN METHOD -->
+
+<div class="scan-method">
+
+
+<h3>SCAN METHOD</h3>
+
+
 <label>
 
 <input 
-type="radio" 
-name="scanMethod" 
+type="radio"
+name="scanMethod"
+value="camera"
+checked
+onchange="changeScanMode()">
+
+📷 Camera Scanner
+
+</label>
+
+
+<br>
+
+
+<label>
+
+<input 
+type="radio"
+name="scanMethod"
 value="bluetooth"
 onchange="changeScanMode()">
 
 🔫 Bluetooth Scanner
 
 </label>
+
+
+</div>
+
+
+
+<!-- BLUETOOTH SCANNER INPUT -->
+
+<input
+id="bluetoothInput"
+type="text"
+autocomplete="off"
+style="position:absolute; left:-9999px;">
+
+
+
+
 
 <div class="manual-input">
 
@@ -142,22 +187,30 @@ placeholder="Enter barcode">
 
 </div>
  
+
 <p>
 Barcode:
 <b id="barcode">---</b>
 </p>
-  
+
+
+
 <div class="list-title">
 
-  <button class="clear-btn" onclick="clearList()">
-    🗑️ Clear
-  </button>
 
-  <h2>📋 List</h2>
+<button class="clear-btn" onclick="clearList()">
+🗑️ Clear
+</button>
 
-  <span></span>
+
+<h2>📋 List</h2>
+
+
+<span></span>
+
 
 </div>
+
 
 
 <div id="itemList"></div>
@@ -170,6 +223,7 @@ Total:
 </h3>
 
 
+
 <br>
 
 
@@ -177,15 +231,19 @@ Total:
 📤 UPLOAD LIST
 </button>
 
-  
+
+
 
 <div class="logout-area">
+
 
 <button class="logout-btn" onclick="logout()">
 LOGOUT
 </button>
 
+
 </div>
+
 
 
 
@@ -194,6 +252,7 @@ LOGOUT
 
 
 </div>
+
 
 
 
@@ -209,6 +268,7 @@ LOGOUT
 <script src="stock.js"></script>
 
 <script src="upload.js"></script>
+
 
 
 </body>

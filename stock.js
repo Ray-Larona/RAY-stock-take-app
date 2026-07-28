@@ -382,6 +382,10 @@ function changeScanMode(){
         "bluetoothInput"
     );
 
+  if(!scanBtn || !bluetoothInput){
+    console.log("Bluetooth elements missing");
+    return;
+}
 
 
     if(mode === "bluetooth"){

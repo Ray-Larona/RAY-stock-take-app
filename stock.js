@@ -1,16 +1,14 @@
 let currentLocation = "";
 
+
 // ===============================
 // LOCATION
 // ===============================
 
-
 function setLocation(){
-
 
 let input =
 document.getElementById("locationInput").value.trim();
-
 
 
 if(input==""){
@@ -22,9 +20,7 @@ return;
 }
 
 
-
 currentLocation = input.toUpperCase();
-
 
 
 localStorage.setItem(
@@ -33,32 +29,25 @@ currentLocation
 );
 
 
-
 document.getElementById("currentLocation").innerHTML =
 currentLocation;
-
 
 
 alert(
 "Location set: " + currentLocation
 );
 
-
 }
-
 
 
 
 function loadLocation(){
 
-
 let saved =
 localStorage.getItem("currentLocation");
 
 
-
 if(saved){
-
 
 currentLocation = saved;
 
@@ -73,230 +62,243 @@ display.innerHTML=currentLocation;
 
 }
 
+}
 
 }
 
 
-}
 
 let stockItems = [];
 
 
+// ===============================
 // LOAD SAVED DATA
+// ===============================
 
 function loadItems(){
 
-  let saved = localStorage.getItem("stockItems");
+let saved = localStorage.getItem("stockItems");
 
-  if(saved){
 
-    stockItems = JSON.parse(saved);
+if(saved){
 
-  }
+stockItems = JSON.parse(saved);
 
-  displayItems();
+}
+
+
+displayItems();
 
 }
 
 
 
+// ===============================
 // ADD BARCODE
+// ===============================
 
 function addBarcode(barcode){
 
 
-  let foundIndex = stockItems.findIndex(
-    item => item.barcode == barcode
-  );
-
-
-  if(foundIndex !== -1){
-
-
-    stockItems[foundIndex].qty += 1;
-
-
-    // ilipat sa taas ang scanned item
-
-    let item = stockItems.splice(foundIndex,1)[0];
-
-    stockItems.unshift(item);
+let foundIndex = stockItems.findIndex(
+item => item.barcode == barcode
+);
 
 
 
-  }else{
+if(foundIndex !== -1){
 
 
-    stockItems.unshift({
-
-      barcode: barcode,
-
-      qty:1
-
-    });
+stockItems[foundIndex].qty += 1;
 
 
-  }
+
+let item = stockItems.splice(foundIndex,1)[0];
+
+stockItems.unshift(item);
 
 
-  saveItems();
 
-  displayItems();
+}else{
+
+
+stockItems.unshift({
+
+barcode: barcode,
+
+qty:1
+
+});
 
 
 }
 
 
-// SAVE PHONE STORAGE
+
+saveItems();
+
+displayItems();
+
+
+}
+
+
+
+// ===============================
+// SAVE STORAGE
+// ===============================
 
 function saveItems(){
 
-  localStorage.setItem(
-    "stockItems",
-    JSON.stringify(stockItems)
-  );
+localStorage.setItem(
+"stockItems",
+JSON.stringify(stockItems)
+);
 
 }
 
 
 
+// ===============================
 // DISPLAY LIST
+// ===============================
 
 function displayItems(){
 
 
-  let box = document.getElementById("itemList");
+let box = document.getElementById("itemList");
 
 
-  if(!box){
+if(!box){
 
-    return;
+return;
 
-  }
-
-
-  box.innerHTML = "";
-
-
-  stockItems.forEach((item,index)=>{
-
-
-    box.innerHTML += `
-
-    <div class="item-row">
-
-
-      <div class="barcode">
-
-        ${item.barcode}
-
-      </div>
-
-
-      <div class="qty-control">
-
-
-        <button class="qty-btn"
-        onclick="changeQty(${index},-1)">
-        -
-        </button>
-
-
-        <span class="qty">
-        ${item.qty}
-        </span>
-
-
-        <button class="qty-btn"
-        onclick="changeQty(${index},1)">
-        +
-        </button>
-
-
-      </div>
-
-
-    </div>
-
-    `;
-
-
-  });
+}
 
 
 
-  let total = document.getElementById("total");
+box.innerHTML = "";
 
 
-  if(total){
 
-    total.innerHTML = totalItems();
+stockItems.forEach((item,index)=>{
 
-  }
+
+box.innerHTML += `
+
+<div class="item-row">
+
+
+<div class="barcode">
+
+${item.barcode}
+
+</div>
+
+
+
+<div class="qty-control">
+
+
+<button class="qty-btn"
+onclick="changeQty(${index},-1)">
+-
+</button>
+
+
+
+<span class="qty">
+${item.qty}
+</span>
+
+
+
+<button class="qty-btn"
+onclick="changeQty(${index},1)">
++
+</button>
+
+
+
+</div>
+
+
+</div>
+
+`;
+
+
+});
+
+
+
+let total = document.getElementById("total");
+
+
+if(total){
+
+total.innerHTML = totalItems();
+
+}
 
 
 }
 
 
 
+// ===============================
 // CHANGE QTY
+// ===============================
 
 function changeQty(index,value){
 
 
-  stockItems[index].qty += value;
+stockItems[index].qty += value;
 
 
-  if(stockItems[index].qty <=0){
 
-    stockItems.splice(index,1);
+if(stockItems[index].qty <=0){
 
-  }
+stockItems.splice(index,1);
+
+}
 
 
-  saveItems();
 
-  displayItems();
+saveItems();
+
+displayItems();
 
 
 }
 
 
 
+// ===============================
 // TOTAL
+// ===============================
 
 function totalItems(){
 
 
- let total=0;
+let total=0;
 
 
- stockItems.forEach(item=>{
-
-  total += item.qty;
-
- });
+stockItems.forEach(item=>{
 
 
- return total;
+total += item.qty;
+
+
+});
+
+
+return total;
 
 
 }
 
 
-
-// START
-
-window.addEventListener(
-"load",
-function(){
-
- loadItems();
-
- loadLocation();
-
-}
-);
 
 // ===============================
 // CLEAR LIST
@@ -304,37 +306,44 @@ function(){
 
 function clearList(){
 
-  let confirmClear = confirm(
-    "⚠️ Clear all scanned items?"
-  );
+
+let confirmClear = confirm(
+"⚠️ Clear all scanned items?"
+);
 
 
-  if(confirmClear){
+
+if(confirmClear){
 
 
-    stockItems = [];
+stockItems = [];
 
 
-    localStorage.removeItem(
-      "stockItems"
-    );
+localStorage.removeItem(
+"stockItems"
+);
 
 
-    displayItems();
+
+displayItems();
 
 
-    document.getElementById("barcode").innerHTML="---";
+
+document.getElementById("barcode").innerHTML="---";
 
 
-    alert(
-      "List cleared"
-    );
 
-
-  }
+alert(
+"List cleared"
+);
 
 
 }
+
+
+}
+
+
 
 // ===============================
 // MANUAL BARCODE INPUT
@@ -342,26 +351,36 @@ function clearList(){
 
 function manualAddBarcode(){
 
-  let barcode =
-  document.getElementById("manualBarcode").value.trim();
+
+let barcode =
+document.getElementById("manualBarcode").value.trim();
 
 
-  if(barcode==""){
 
-    alert("Please enter barcode");
-
-    return;
-
-  }
+if(barcode==""){
 
 
-  addBarcode(barcode);
+alert("Please enter barcode");
 
 
-  document.getElementById("manualBarcode").value="";
+return;
 
 
 }
+
+
+
+addBarcode(barcode);
+
+
+
+document.getElementById("manualBarcode").value="";
+
+
+}
+
+
+
 
 // ===============================
 // SCAN MODE
@@ -370,105 +389,148 @@ function manualAddBarcode(){
 function changeScanMode(){
 
 
-    let mode = document.querySelector(
-        'input[name="scanMethod"]:checked'
-    ).value;
+let mode = document.querySelector(
+'input[name="scanMethod"]:checked'
+).value;
 
 
 
-    let scanBtn = document.getElementById("scanBtn");
-
-    let bluetoothInput = document.getElementById(
-        "bluetoothInput"
-    );
-
-  if(!scanBtn || !bluetoothInput){
-    console.log("Bluetooth elements missing");
-    return;
-}
+let scanBtn =
+document.getElementById("scanBtn");
 
 
-    if(mode === "bluetooth"){
+let bluetoothInput =
+document.getElementById("bluetoothInput");
 
 
-        console.log("BLUETOOTH SCANNER MODE");
 
+if(!scanBtn || !bluetoothInput){
 
-        scanBtn.style.display="none";
+console.log("Bluetooth elements missing");
 
-
-        bluetoothInput.focus();
-
-
-    }
-    else{
-
-
-        console.log("CAMERA SCANNER MODE");
-
-
-        scanBtn.style.display="block";
-
-
-    }
-
+return;
 
 }
 
+
+
+if(mode === "bluetooth"){
+
+
+console.log(
+"BLUETOOTH SCANNER MODE"
+);
+
+
+
+scanBtn.style.display="none";
+
+
+bluetoothInput.focus();
+
+
+
+}else{
+
+
+console.log(
+"CAMERA SCANNER MODE"
+);
+
+
+
+scanBtn.style.display="block";
+
+
+}
+
+
+}
+
+
+
+
+
 // ===============================
-// BLUETOOTH BARCODE INPUT
+// START
 // ===============================
 
-window.addEventListener("load", function(){
-
-    let bluetoothInput = document.getElementById(
-        "bluetoothInput"
-    );
+window.addEventListener(
+"load",
+function(){
 
 
-    if(bluetoothInput){
+loadItems();
+
+loadLocation();
 
 
-        bluetoothInput.addEventListener(
-            "keydown",
-            function(e){
 
 
-                if(e.key === "Enter"){
+let bluetoothInput =
+document.getElementById("bluetoothInput");
 
 
-                    let barcode = this.value.trim();
+
+if(bluetoothInput){
 
 
-                    if(barcode){
+
+bluetoothInput.addEventListener(
+"keydown",
+function(e){
 
 
-                        console.log(
-                            "BLUETOOTH SCAN:",
-                            barcode
-                        );
+
+if(e.key === "Enter"){
 
 
-                        addBarcode(barcode);
+
+let barcode =
+this.value.trim();
 
 
-                    }
+
+if(barcode){
 
 
-                    this.value="";
+
+console.log(
+"BLUETOOTH SCAN:",
+barcode
+);
 
 
-                    this.focus();
+
+addBarcode(barcode);
 
 
-                }
+
+}
 
 
-            }
-        );
+
+this.value="";
 
 
-    }
+this.focus();
 
 
-});
+
+}
+
+
+
+}
+
+);
+
+
+
+}
+
+
+
+}
+
+);

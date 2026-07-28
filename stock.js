@@ -362,3 +362,47 @@ function manualAddBarcode(){
 
 
 }
+
+
+// ===============================
+// BLUETOOTH BARCODE INPUT
+// ===============================
+
+document
+.getElementById("bluetoothInput")
+.addEventListener("keydown", function(e){
+
+
+    if(e.key === "Enter"){
+
+
+        let barcode = this.value.trim();
+
+
+
+        if(barcode){
+
+
+            console.log(
+                "BLUETOOTH SCAN:",
+                barcode
+            );
+
+
+            addBarcode(barcode);
+
+
+        }
+
+
+
+        this.value="";
+
+
+        this.focus();
+
+
+    }
+
+
+});

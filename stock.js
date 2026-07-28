@@ -363,6 +363,53 @@ function manualAddBarcode(){
 
 }
 
+// ===============================
+// SCAN MODE
+// ===============================
+
+function changeScanMode(){
+
+
+    let mode = document.querySelector(
+        'input[name="scanMethod"]:checked'
+    ).value;
+
+
+
+    let scanBtn = document.getElementById("scanBtn");
+
+    let bluetoothInput = document.getElementById(
+        "bluetoothInput"
+    );
+
+
+
+    if(mode === "bluetooth"){
+
+
+        console.log("BLUETOOTH SCANNER MODE");
+
+
+        scanBtn.style.display="none";
+
+
+        bluetoothInput.focus();
+
+
+    }
+    else{
+
+
+        console.log("CAMERA SCANNER MODE");
+
+
+        scanBtn.style.display="block";
+
+
+    }
+
+
+}
 
 // ===============================
 // BLUETOOTH BARCODE INPUT

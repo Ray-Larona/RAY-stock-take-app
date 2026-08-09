@@ -59,7 +59,13 @@ function loadLocation(){
 
 
 
+// ===============================
+// STOCK ITEMS
+// ===============================
+
 let stockItems = [];
+
+
 
 // ===============================
 // LOAD SAVED DATA
@@ -67,7 +73,8 @@ let stockItems = [];
 
 function loadItems(){
 
-  let saved = localStorage.getItem("stockItems");
+  let saved =
+  localStorage.getItem("stockItems");
 
   if(saved){
 
@@ -97,10 +104,10 @@ function addBarcode(barcode){
     stockItems[foundIndex].qty += 1;
 
 
-    let item = stockItems.splice(foundIndex,1)[0];
+    let item =
+    stockItems.splice(foundIndex,1)[0];
 
     stockItems.unshift(item);
-
 
   }else{
 
@@ -144,7 +151,8 @@ function saveItems(){
 
 function displayItems(){
 
-  let box = document.getElementById("itemList");
+  let box =
+  document.getElementById("itemList");
 
   if(!box){
 
@@ -173,7 +181,6 @@ function displayItems(){
             -
           </button>
 
-
           <input
             type="number"
             min="1"
@@ -181,7 +188,6 @@ function displayItems(){
             onchange="setQty(${index},this.value)"
             onkeydown="qtyKeyDown(event,${index},this)"
           >
-
 
           <button
             onclick="changeQty(${index},1)">
@@ -197,7 +203,8 @@ function displayItems(){
   });
 
 
-  let total = document.getElementById("total");
+  let total =
+  document.getElementById("total");
 
   if(total){
 
@@ -210,7 +217,7 @@ function displayItems(){
 
 
 // ===============================
-// CHANGE QTY
+// CHANGE QTY (+ / -)
 // ===============================
 
 function changeQty(index,value){
@@ -230,7 +237,7 @@ function changeQty(index,value){
   displayItems();
 
 
-  // Return focus to Bluetooth scanner
+  // Return to Bluetooth scanner
   focusBluetoothScanner();
 
 }
@@ -243,7 +250,8 @@ function changeQty(index,value){
 
 function setQty(index,value){
 
-  let qty = parseInt(value);
+  let qty =
+  parseInt(value,10);
 
 
   if(isNaN(qty) || qty <= 0){
@@ -262,7 +270,7 @@ function setQty(index,value){
   displayItems();
 
 
-  // Return focus to Bluetooth scanner
+  // Return to Bluetooth scanner
   focusBluetoothScanner();
 
 }
@@ -296,7 +304,6 @@ function focusBluetoothScanner(){
   let bluetoothInput =
   document.getElementById("bluetoothInput");
 
-
   if(!bluetoothInput){
 
     return;
@@ -312,7 +319,7 @@ function focusBluetoothScanner(){
 
   if(mode && mode.value === "bluetooth"){
 
-    setTimeout(()=>{
+    setTimeout(function(){
 
       bluetoothInput.focus();
 
@@ -330,13 +337,15 @@ function focusBluetoothScanner(){
 
 function totalItems(){
 
-  let total=0;
+  let total = 0;
+
 
   stockItems.forEach(item=>{
 
     total += item.qty;
 
   });
+
 
   return total;
 
@@ -350,7 +359,8 @@ function totalItems(){
 
 function clearList(){
 
-  let confirmClear = confirm(
+  let confirmClear =
+  confirm(
     "⚠️ Clear all scanned items?"
   );
 
@@ -367,7 +377,8 @@ function clearList(){
     displayItems();
 
 
-    document.getElementById("barcode").innerHTML="---";
+    document.getElementById("barcode").innerHTML =
+    "---";
 
 
     alert(
@@ -414,7 +425,8 @@ function manualAddBarcode(){
 
 function changeScanMode(){
 
-  let mode = document.querySelector(
+  let mode =
+  document.querySelector(
     'input[name="scanMethod"]:checked'
   ).value;
 
@@ -428,7 +440,9 @@ function changeScanMode(){
 
   if(!scanBtn || !bluetoothInput){
 
-    console.log("Bluetooth elements missing");
+    console.log(
+      "Bluetooth elements missing"
+    );
 
     return;
 
@@ -445,7 +459,6 @@ function changeScanMode(){
     scanBtn.style.display="none";
 
     bluetoothInput.focus();
-
 
   }else{
 
@@ -481,21 +494,17 @@ window.addEventListener(
 
     if(bluetoothInput){
 
-
       bluetoothInput.addEventListener(
         "keydown",
         function(e){
 
-
           if(e.key === "Enter"){
-
 
             let barcode =
             this.value.trim();
 
 
             if(barcode){
-
 
               console.log(
                 "BLUETOOTH SCAN:",
@@ -505,7 +514,6 @@ window.addEventListener(
 
               addBarcode(barcode);
 
-
             }
 
 
@@ -513,18 +521,13 @@ window.addEventListener(
 
             this.focus();
 
-
           }
-
 
         }
 
       );
 
-
     }
 
-
   }
-
 );

@@ -160,9 +160,7 @@ function displayItems(){
 
   }
 
-
   box.innerHTML = "";
-
 
   stockItems.forEach((item,index)=>{
 
@@ -181,13 +179,11 @@ function displayItems(){
             -
           </button>
 
-          <input
-            type="number"
-            min="1"
-            value="${item.qty}"
-            onchange="setQty(${index},this.value)"
-            onkeydown="qtyKeyDown(event,${index},this)"
-          >
+          <span
+            onclick="editQty(${index})"
+            style="cursor:pointer;">
+            ${item.qty}
+          </span>
 
           <button
             onclick="changeQty(${index},1)">
@@ -213,8 +209,6 @@ function displayItems(){
   }
 
 }
-
-
 
 // ===============================
 // CHANGE QTY (+ / -)
@@ -242,7 +236,46 @@ function changeQty(index,value){
 
 }
 
+function editQty(index){
 
+  let newQty =
+  prompt(
+    "Enter quantity:",
+    stockItems[index].qty
+  );
+
+
+  if(newQty === null){
+
+    return;
+
+  }
+
+
+  newQty = parseInt(newQty,10);
+
+
+  if(isNaN(newQty) || newQty <= 0){
+
+    alert("Please enter a valid quantity.");
+
+    return;
+
+  }
+
+
+  stockItems[index].qty = newQty;
+
+
+  saveItems();
+
+  displayItems();
+
+
+  // Return focus to Bluetooth scanner
+  focusBluetoothScanner();
+
+}
 
 // ===============================
 // DIRECT QTY INPUT

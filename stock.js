@@ -148,67 +148,66 @@ function saveItems(){
 // ===============================
 // DISPLAY LIST
 // ===============================
-
 function displayItems(){
 
-  let box =
-  document.getElementById("itemList");
+let box =
+document.getElementById("itemList");
 
-  if(!box){
+if(!box){
 
-    return;
-
-  }
-
-  box.innerHTML = "";
-
-  stockItems.forEach((item,index)=>{
-
-    box.innerHTML += `
-
-      <div class="stock-item">
-
-        <div class="barcode-name">
-          ${item.barcode}
-        </div>
-
-        <div class="qty-controls">
-
-          <button
-            onclick="changeQty(${index},-1)">
-            -
-          </button>
-
-          <span
-            onclick="editQty(${index})"
-            style="cursor:pointer;">
-            ${item.qty}
-          </span>
-
-          <button
-            onclick="changeQty(${index},1)">
-            +
-          </button>
-
-        </div>
-
-      </div>
-
-    `;
-
-  });
-
-
-  let total =
-  document.getElementById("total");
-
-  if(total){
-
-    total.innerHTML = totalItems();
-
-  }
+return;
 
 }
+
+box.innerHTML = "";
+
+stockItems.forEach((item,index)=>{
+
+box.innerHTML += `
+
+<div class="stock-item">
+
+  <div class="barcode-name">
+    ${item.barcode}
+  </div>
+
+  <div class="qty-controls">
+
+    <button
+      onclick="changeQty(${index},-1)">
+      -
+    </button>
+
+    <span
+      onclick="editQty(${index})"
+      style="cursor:pointer;">
+      ${item.qty}
+    </span>
+
+    <button
+      onclick="changeQty(${index},1)">
+      +
+    </button>
+
+  </div>
+
+</div>
+
+`;
+
+});
+
+let total =
+document.getElementById("total");
+
+if(total){
+
+total.innerHTML = totalItems();
+
+}
+
+}
+
 
 // ===============================
 // CHANGE QTY (+ / -)
@@ -238,45 +237,39 @@ function changeQty(index,value){
 
 function editQty(index){
 
-  let newQty =
-  prompt(
-    "Enter quantity:",
-    stockItems[index].qty
-  );
+let newQty =
+prompt(
+"Enter quantity:",
+stockItems[index].qty
+);
 
+if(newQty === null){
 
-  if(newQty === null){
-
-    return;
-
-  }
-
-
-  newQty = parseInt(newQty,10);
-
-
-  if(isNaN(newQty) || newQty <= 0){
-
-    alert("Please enter a valid quantity.");
-
-    return;
-
-  }
-
-
-  stockItems[index].qty = newQty;
-
-
-  saveItems();
-
-  displayItems();
-
-
-  // Return focus to Bluetooth scanner
-  focusBluetoothScanner();
+return;
 
 }
 
+newQty =
+parseInt(newQty,10);
+
+if(isNaN(newQty) || newQty <= 0){
+
+alert("Please enter a valid quantity.");
+
+return;
+
+}
+
+stockItems[index].qty =
+newQty;
+
+saveItems();
+
+displayItems();
+
+focusBluetoothScanner();
+
+}
 // ===============================
 // DIRECT QTY INPUT
 // ===============================

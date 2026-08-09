@@ -165,26 +165,29 @@ stockItems.forEach((item,index)=>{
 
 box.innerHTML += `
 
-<div class="stock-item">
+<div class="item-row">
 
-  <div class="barcode-name">
+  <div class="barcode">
     ${item.barcode}
   </div>
 
-  <div class="qty-controls">
+  <div class="qty-control">
 
     <button
+      class="qty-btn"
       onclick="changeQty(${index},-1)">
       -
     </button>
 
     <span
+      class="qty"
       onclick="editQty(${index})"
       style="cursor:pointer;">
       ${item.qty}
     </span>
 
     <button
+      class="qty-btn"
       onclick="changeQty(${index},1)">
       +
     </button>
@@ -207,7 +210,6 @@ total.innerHTML = totalItems();
 }
 
 }
-
 
 // ===============================
 // CHANGE QTY (+ / -)
@@ -270,6 +272,7 @@ displayItems();
 focusBluetoothScanner();
 
 }
+
 // ===============================
 // DIRECT QTY INPUT
 // ===============================
@@ -354,7 +357,6 @@ function focusBluetoothScanner(){
   }
 
 }
-
 
 
 // ===============================

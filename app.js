@@ -1,5 +1,21 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyPmYgCYVx4nhm6eqSzPG8CuD0IsC_-7SwT8K6ZH-F8dy1jA2NoHS0eJwT-5aS83OdpqQ/exec";
 
+// ===============================
+// HELPER: LOCK / UNLOCK SCREEN
+// ===============================
+function toggleLockScreen(lock, message = "Processing...") {
+  const overlay = document.getElementById("loadingOverlay");
+  const text = document.getElementById("loadingText");
+  
+  if (overlay && text) {
+    if (lock) {
+      text.innerText = message;
+      overlay.style.display = "flex";
+    } else {
+      overlay.style.display = "none";
+    }
+  }
+}
 
 // ===============================
 // LOGIN
@@ -21,6 +37,9 @@ function login(){
     btn.disabled=true;
     btn.innerHTML="⏳ LOGGING IN...";
   }
+
+  // I-lock ang buong screen habang naglo-log in
+  toggleLockScreen(true, "Logging in, please wait...");
 
   fetch(API_URL,{
 
@@ -58,6 +77,7 @@ function login(){
         btn.disabled=false;
         btn.innerHTML="LOGIN";
       }
+      toggleLockScreen(false); // Tanggalin ang lock kapag nagka-error
 
     }
 
@@ -73,6 +93,7 @@ function login(){
       btn.disabled=false;
       btn.innerHTML="LOGIN";
     }
+    toggleLockScreen(false); // Tanggalin ang lock kapag nagka-error
 
   });
 
@@ -188,9 +209,7 @@ function logout(){
 
   let token = localStorage.getItem("token");
 
-
   const btn = document.querySelector(".logout-btn");
-
 
   if(btn){
 
@@ -200,7 +219,8 @@ function logout(){
 
   }
 
-
+  // I-lock ang buong screen habang naglolog-out
+  toggleLockScreen(true, "Logging out, please wait...");
 
   if(!token){
 
@@ -211,8 +231,6 @@ function logout(){
     return;
 
   }
-
-
 
   fetch(API_URL,{
 
@@ -228,45 +246,27 @@ function logout(){
 
   })
 
-
   .then(res=>res.json())
-
 
   .then(data=>{
 
-
     console.log("LOGOUT RESULT:",data);
-
-
 
     localStorage.clear();
 
-
-
     window.location.href="index.html";
-
-
 
   })
 
-
   .catch(err=>{
-
 
     console.log(err);
 
-
-
     localStorage.clear();
-
-
 
     window.location.href="index.html";
 
-
   });
-
-
 
 }
 
@@ -280,12 +280,9 @@ function startHeartbeat(){
 
   setInterval(function(){
 
-
     let token = localStorage.getItem("token");
 
-
     if(token){
-
 
       fetch(API_URL,{
 
@@ -307,7 +304,6 @@ function startHeartbeat(){
 
         console.log("HEARTBEAT:",data);
 
-
         if(!data.success){
 
           localStorage.clear();
@@ -315,7 +311,6 @@ function startHeartbeat(){
           window.location.href="index.html";
 
         }
-
 
       })
 
@@ -325,12 +320,9 @@ function startHeartbeat(){
 
       });
 
-
     }
 
-
   },300000); // 5 mins
-
 
 }
 
@@ -351,4 +343,3 @@ window.onload=function(){
   }
 
 }
-    

@@ -1,660 +1,354 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyPmYgCYVx4nhm6eqSzPG8CuD0IsC_-7SwT8K6ZH-F8dy1jA2NoHS0eJwT-5aS83OdpqQ/exec";
 
-let currentLocation = "";
 
 // ===============================
-// HELPER: LOCK / UNLOCK SCREEN
-// ===============================
-function toggleLockScreen(lock, message = "Processing...") {
-  const overlay = document.getElementById("loadingOverlay");
-  const text = document.getElementById("loadingText");
-  
-  if (overlay && text) {
-    if (lock) {
-      text.innerText = message;
-      overlay.style.display = "flex";
-    } else {
-      overlay.style.display = "none";
-    }
-  }
-}
-
-// ===============================
-// LOCATION
+// LOGIN
 // ===============================
 
-function setLocation(){
+function login(){
 
-  let input =
-  document.getElementById("locationInput").value.trim();
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-  if(input==""){
-
-    alert("Please enter location");
-
+  if(username=="" || password==""){
+    document.getElementById("message").innerHTML="Please enter username and password.";
     return;
-
   }
 
-  currentLocation = input.toUpperCase();
+  const btn=document.getElementById("loginBtn");
 
-  localStorage.setItem(
-    "currentLocation",
-    currentLocation
-  );
+  if(btn){
+    btn.disabled=true;
+    btn.innerHTML="⏳ LOGGING IN...";
+  }
 
-  document.getElementById("currentLocation").innerHTML =
-  currentLocation;
+  fetch(API_URL,{
 
-  alert(
-    "Location set: " + currentLocation
-  );
+    method:"POST",
 
-}
+    body:JSON.stringify({
 
+      action:"login",
+      username:username,
+      password:password
 
+    })
 
-function loadLocation(){
+  })
 
-  let saved =
-  localStorage.getItem("currentLocation");
+  .then(res=>res.json())
 
-  if(saved){
+  .then(data=>{
 
-    currentLocation = saved;
+    console.log(data);
 
-    let display =
-    document.getElementById("currentLocation");
+    if(data.success){
 
-    if(display){
+      localStorage.setItem("token",data.token);
+      localStorage.setItem("name",data.name);
+      localStorage.setItem("role",data.role);
 
-      display.innerHTML=currentLocation;
+      window.location.href="stock.html";
+
+    }else{
+
+      document.getElementById("message").innerHTML=data.message;
+
+      if(btn){
+        btn.disabled=false;
+        btn.innerHTML="LOGIN";
+      }
 
     }
 
-  }
+  })
 
-}
+  .catch(err=>{
 
+    document.getElementById("message").innerHTML="Connection Error";
 
+    console.log(err);
 
-// ===============================
-// STOCK ITEMS
-// ===============================
-
-let stockItems = [];
-
-
-
-// ===============================
-// LOAD SAVED DATA
-// ===============================
-
-function loadItems(){
-
-  let saved =
-  localStorage.getItem("stockItems");
-
-  if(saved){
-
-    stockItems = JSON.parse(saved);
-
-  }
-
-  displayItems();
-
-}
-
-
-
-// ===============================
-// ADD BARCODE
-// ===============================
-
-function addBarcode(barcode){
-
-  let foundIndex = stockItems.findIndex(
-    item => item.barcode == barcode
-  );
-
-
-  if(foundIndex !== -1){
-
-    stockItems[foundIndex].qty += 1;
-
-
-    let item =
-    stockItems.splice(foundIndex,1)[0];
-
-    stockItems.unshift(item);
-
-  }else{
-
-    stockItems.unshift({
-
-      barcode: barcode,
-
-      qty:1
-
-    });
-
-  }
-
-
-  saveItems();
-
-  displayItems();
-
-}
-
-
-
-// ===============================
-// SAVE STORAGE
-// ===============================
-
-function saveItems(){
-
-  localStorage.setItem(
-    "stockItems",
-    JSON.stringify(stockItems)
-  );
-
-}
-
-
-
-// ===============================
-// DISPLAY LIST
-// ===============================
-function displayItems(){
-
-let box =
-document.getElementById("itemList");
-
-if(!box){
-
-return;
-
-}
-
-box.innerHTML = "";
-
-stockItems.forEach((item,index)=>{
-
-box.innerHTML += `
-
-<div class="item-row">
-
-  <div class="barcode">
-    ${item.barcode}
-  </div>
-
-  <div class="qty-control">
-
-    <button
-      class="qty-btn"
-      onclick="changeQty(${index},-1)">
-      -
-    </button>
-
-    <span
-      class="qty"
-      onclick="editQty(${index})"
-      style="cursor:pointer;">
-      ${item.qty}
-    </span>
-
-    <button
-      class="qty-btn"
-      onclick="changeQty(${index},1)">
-      +
-    </button>
-
-  </div>
-
-</div>
-
-`;
-
-});
-
-let total =
-document.getElementById("total");
-
-if(total){
-
-total.innerHTML = totalItems();
-
-}
-
-}
-
-// ===============================
-// CHANGE QTY (+ / -)
-// ===============================
-
-function changeQty(index,value){
-
-  stockItems[index].qty += value;
-
-
-  if(stockItems[index].qty <=0){
-
-    stockItems.splice(index,1);
-
-  }
-
-
-  saveItems();
-
-  displayItems();
-
-
-  // Return to Bluetooth scanner
-  focusBluetoothScanner();
-
-}
-
-function editQty(index){
-
-let newQty =
-prompt(
-"Enter quantity:",
-stockItems[index].qty
-);
-
-if(newQty === null){
-
-return;
-
-}
-
-newQty =
-parseInt(newQty,10);
-
-if(isNaN(newQty) || newQty <= 0){
-
-alert("Please enter a valid quantity.");
-
-return;
-
-}
-
-stockItems[index].qty =
-newQty;
-
-saveItems();
-
-displayItems();
-
-focusBluetoothScanner();
-
-}
-
-// ===============================
-// DIRECT QTY INPUT
-// ===============================
-
-function setQty(index,value){
-
-  let qty =
-  parseInt(value,10);
-
-
-  if(isNaN(qty) || qty <= 0){
-
-    stockItems.splice(index,1);
-
-  }else{
-
-    stockItems[index].qty = qty;
-
-  }
-
-
-  saveItems();
-
-  displayItems();
-
-
-  // Return to Bluetooth scanner
-  focusBluetoothScanner();
-
-}
-
-
-
-// ===============================
-// QTY ENTER KEY
-// ===============================
-
-function qtyKeyDown(event,index,input){
-
-  if(event.key === "Enter"){
-
-    event.preventDefault();
-
-    setQty(index,input.value);
-
-  }
-
-}
-
-
-
-// ===============================
-// BLUETOOTH SCANNER FOCUS
-// ===============================
-
-function focusBluetoothScanner(){
-
-  let bluetoothInput =
-  document.getElementById("bluetoothInput");
-
-  if(!bluetoothInput){
-
-    return;
-
-  }
-
-
-  let mode =
-  document.querySelector(
-    'input[name="scanMethod"]:checked'
-  );
-
-
-  if(mode && mode.value === "bluetooth"){
-
-    setTimeout(function(){
-
-      bluetoothInput.focus();
-
-    },100);
-
-  }
-
-}
-
-
-// ===============================
-// TOTAL
-// ===============================
-
-function totalItems(){
-
-  let total = 0;
-
-
-  stockItems.forEach(item=>{
-
-    total += item.qty;
+    if(btn){
+      btn.disabled=false;
+      btn.innerHTML="LOGIN";
+    }
 
   });
 
-
-  return total;
-
 }
 
 
 
 // ===============================
-// CLEAR LIST
+// CHECK STOCK PAGE
 // ===============================
 
-function clearList(){
+function checkLogin(){
 
-  let confirmClear =
-  confirm(
-    "⚠️ Clear all scanned items?"
-  );
-
-
-  if(confirmClear){
-
-    stockItems = [];
-
-    localStorage.removeItem(
-      "stockItems"
-    );
-
-
-    displayItems();
-
-
-    document.getElementById("barcode").innerHTML =
-    "---";
-
-
-    alert(
-      "List cleared"
-    );
-
-  }
-
-}
-
-
-
-// ===============================
-// MANUAL BARCODE INPUT
-// ===============================
-
-function manualAddBarcode(){
-
-  let barcode =
-  document.getElementById("manualBarcode").value.trim();
-
-
-  if(barcode==""){
-
-    alert("Please enter barcode");
-
-    return;
-
-  }
-
-
-  addBarcode(barcode);
-
-
-  document.getElementById("manualBarcode").value="";
-
-}
-
-
-
-// ===============================
-// SCAN MODE
-// ===============================
-
-function changeScanMode(){
-
-  let mode =
-  document.querySelector(
-    'input[name="scanMethod"]:checked'
-  ).value;
-
-
-  let scanBtn =
-  document.getElementById("scanBtn");
-
-  let bluetoothInput =
-  document.getElementById("bluetoothInput");
-
-
-  if(!scanBtn || !bluetoothInput){
-
-    console.log(
-      "Bluetooth elements missing"
-    );
-
-    return;
-
-  }
-
-
-  if(mode === "bluetooth"){
-
-    console.log(
-      "BLUETOOTH SCANNER MODE"
-    );
-
-
-    scanBtn.style.display="none";
-
-    bluetoothInput.focus();
-
-  }else{
-
-    console.log(
-      "CAMERA SCANNER MODE"
-    );
-
-
-    scanBtn.style.display="block";
-
-  }
-
-}
-
-
-
-// ===============================
-// UPLOAD STOCK TAKE (NA MAY SCREEN LOCK)
-// ===============================
-
-function uploadStockTake() {
   let token = localStorage.getItem("token");
 
-  if (!token) {
-    alert("No token found. Please login again.");
-    window.location.href = "index.html";
+  console.log("TOKEN:",token);
+
+  if(!token){
+
+    alert("NO TOKEN");
+
+    window.location.href="index.html";
+
     return;
+
   }
 
-  if (!currentLocation) {
-    alert("Please set location first.");
-    return;
-  }
+  fetch(API_URL,{
 
-  if (stockItems.length === 0) {
-    alert("No items to upload.");
-    return;
-  }
+    method:"POST",
 
-  const btn = document.getElementById("uploadBtn");
-  if(btn){
-    btn.disabled = true;
-    btn.innerHTML = "⏳ UPLOADING...";
-  }
+    body:JSON.stringify({
 
-  // I-lock ang buong screen habang nag-a-upload
-  toggleLockScreen(true, "Uploading stock take to Google Sheets...");
+      action:"checkSession",
 
-  fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "uploadStockTake",
-      token: token,
-      location: currentLocation,
-      items: stockItems
+      token:token
+
     })
+
   })
-  .then(res => res.json())
-  .then(data => {
-    toggleLockScreen(false); // Tanggalin ang lock kapag tapos na
 
-    if (data.success) {
-      alert("Upload Successful! Batch ID: " + data.batchID);
-      // Linisin ang list pagkatapos mag-success
-      stockItems = [];
-      localStorage.removeItem("stockItems");
-      displayItems();
+  .then(res=>res.json())
 
-      const barcodeText = document.getElementById("barcode");
-      if(barcodeText){
-        barcodeText.innerText="---";
-      }
+  .then(data=>{
 
-      const total = document.getElementById("total");
-      if(total){
-        total.innerText="0";
-      }
-    } else {
-      alert("Upload Failed: " + data.message);
+    console.log("SESSION RESULT:",data);
+
+    if(data.success){
+
+      document.getElementById("user").innerHTML =
+      "👤 "+data.name+" ("+data.role+")";
+
+      loadSession();
+
+    }else{
+
+      alert("INVALID SESSION");
+
+      localStorage.clear();
+
+      window.location.href="index.html";
+
     }
-  })
-  .catch(err => {
-    toggleLockScreen(false); // Tanggalin ang lock kapag nagka-error
-    console.error(err);
-    alert("Connection Error during upload.");
-  })
-  .finally(() => {
-    if(btn){
-      btn.disabled = false;
-      btn.innerHTML = "📤 UPLOAD LOCATION";
-    }
+
   });
+
 }
 
 
+
+// ===============================
+// LOAD SESSION
+// ===============================
+
+function loadSession(){
+
+  fetch(API_URL,{
+
+    method:"POST",
+
+    body:JSON.stringify({
+
+      action:"getSession"
+
+    })
+
+  })
+
+  .then(res=>res.json())
+
+  .then(data=>{
+
+    console.log("ACTIVE SESSION:",data);
+
+    if(data.success){
+
+      document.getElementById("session").innerHTML =
+      data.session;
+
+    }
+
+  });
+
+}
+
+
+
+// ===============================
+// LOGOUT
+// ===============================
+
+function logout(){
+
+  let token = localStorage.getItem("token");
+
+
+  const btn = document.querySelector(".logout-btn");
+
+
+  if(btn){
+
+    btn.disabled = true;
+
+    btn.innerHTML = "⏳ LOGGING OUT...";
+
+  }
+
+
+
+  if(!token){
+
+    localStorage.clear();
+
+    window.location.href="index.html";
+
+    return;
+
+  }
+
+
+
+  fetch(API_URL,{
+
+    method:"POST",
+
+    body:JSON.stringify({
+
+      action:"logout",
+
+      token:token
+
+    })
+
+  })
+
+
+  .then(res=>res.json())
+
+
+  .then(data=>{
+
+
+    console.log("LOGOUT RESULT:",data);
+
+
+
+    localStorage.clear();
+
+
+
+    window.location.href="index.html";
+
+
+
+  })
+
+
+  .catch(err=>{
+
+
+    console.log(err);
+
+
+
+    localStorage.clear();
+
+
+
+    window.location.href="index.html";
+
+
+  });
+
+
+
+}
+
+// ===============================
+// HEARTBEAT EVERY 5 MINUTES
+// ===============================
+
+function startHeartbeat(){
+
+  console.log("HEARTBEAT STARTED");
+
+  setInterval(function(){
+
+
+    let token = localStorage.getItem("token");
+
+
+    if(token){
+
+
+      fetch(API_URL,{
+
+        method:"POST",
+
+        body:JSON.stringify({
+
+          action:"heartbeat",
+
+          token:token
+
+        })
+
+      })
+
+      .then(res=>res.json())
+
+      .then(data=>{
+
+        console.log("HEARTBEAT:",data);
+
+
+        if(!data.success){
+
+          localStorage.clear();
+
+          window.location.href="index.html";
+
+        }
+
+
+      })
+
+      .catch(err=>{
+
+        console.log("Heartbeat error:",err);
+
+      });
+
+
+    }
+
+
+  },300000); // 5 mins
+
+
+}
 
 // ===============================
 // START
 // ===============================
 
-window.addEventListener(
-  "load",
-  function(){
+window.onload=function(){
 
-    loadItems();
+  if(document.getElementById("user")){
 
-    loadLocation();
+    console.log("STOCK PAGE DETECTED");
 
+    checkLogin();
 
-    let bluetoothInput =
-    document.getElementById("bluetoothInput");
-
-
-    if(bluetoothInput){
-
-      bluetoothInput.addEventListener(
-        "keydown",
-        function(e){
-
-          if(e.key === "Enter"){
-
-            let barcode =
-            this.value.trim();
-
-
-            if(barcode){
-
-              console.log(
-                "BLUETOOTH SCAN:",
-                barcode
-              );
-
-
-              addBarcode(barcode);
-
-            }
-
-
-            this.value="";
-
-            this.focus();
-
-          }
-
-        }
-
-      );
-
-    }
+    startHeartbeat();
 
   }
-);
+
+}
+    

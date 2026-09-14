@@ -545,6 +545,12 @@ function uploadStockTake() {
     return;
   }
 
+  const btn = document.getElementById("uploadBtn");
+  if(btn){
+    btn.disabled = true;
+    btn.innerHTML = "⏳ UPLOADING...";
+  }
+
   // I-lock ang buong screen habang nag-a-upload
   toggleLockScreen(true, "Uploading stock take to Google Sheets...");
 
@@ -567,6 +573,16 @@ function uploadStockTake() {
       stockItems = [];
       localStorage.removeItem("stockItems");
       displayItems();
+
+      const barcodeText = document.getElementById("barcode");
+      if(barcodeText){
+        barcodeText.innerText="---";
+      }
+
+      const total = document.getElementById("total");
+      if(total){
+        total.innerText="0";
+      }
     } else {
       alert("Upload Failed: " + data.message);
     }
@@ -575,6 +591,12 @@ function uploadStockTake() {
     toggleLockScreen(false); // Tanggalin ang lock kapag nagka-error
     console.error(err);
     alert("Connection Error during upload.");
+  })
+  .finally(() => {
+    if(btn){
+      btn.disabled = false;
+      btn.innerHTML = "📤 UPLOAD LOCATION";
+    }
   });
 }
 

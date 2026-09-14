@@ -14,9 +14,11 @@ async function uploadStockTake() {
   }
 
   // =========================================================
-  // GET BUTTON
+  // GET BUTTON & OVERLAY
   // =========================================================
   const btn = document.getElementById("uploadBtn");
+  const overlay = document.getElementById("loadingOverlay");
+  const loadingText = document.getElementById("loadingText");
 
   // =========================================================
   // EXTRA LOCK: Prevent double upload
@@ -26,32 +28,12 @@ async function uploadStockTake() {
   }
 
   // =========================================================
-  // FULL-SCREEN LOCK / LOADING OVERLAY
-  // (Hinaharangan nito ang buong screen para hindi makapag-click ang user)
+  // SHOW LOADING OVERLAY
   // =========================================================
-  let overlay = document.getElementById("uploadLoadingOverlay");
-  if (!overlay) {
-    overlay = document.createElement("div");
-    overlay.id = "uploadLoadingOverlay";
-    overlay.style.position = "fixed";
-    overlay.style.top = "0";
-    overlay.style.left = "0";
-    overlay.style.width = "100%";
-    overlay.style.height = "100%";
-    overlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-    overlay.style.display = "flex";
-    overlay.style.justifyContent = "center";
-    overlay.style.alignItems = "center";
-    overlay.style.zIndex = "9999";
-    overlay.innerHTML = `
-      <div style="background: white; color: #333; padding: 25px 35px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: center; font-family: sans-serif;">
-        <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
-        <div style="font-size: 16px; font-weight: bold;">UPLOADING ITEMS...</div>
-        <div style="font-size: 13px; color: #666; margin-top: 5px;">Please wait, do not close or refresh.</div>
-      </div>
-    `;
-    document.body.appendChild(overlay);
-  } else {
+  if (loadingText) {
+    loadingText.innerHTML = "📤 UPLOADING ITEMS...<br><span style='font-size: 13px; color: #ccc; font-weight: normal;'>Please wait, do not close or refresh.</span>";
+  }
+  if (overlay) {
     overlay.style.display = "flex";
   }
 
@@ -136,7 +118,7 @@ async function uploadStockTake() {
     if (btn) {
       btn.dataset.uploading = "false";
       btn.disabled = false;
-      btn.innerHTML = "📤 UPLOAD LOCATION";
+      btn.innerHTML = "📤 UPLOAD LIST";
     }
   }
 

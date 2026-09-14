@@ -1,280 +1,638 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Stock Take</title>
-
-<link rel="stylesheet" href="style.css">
-
-</head>
-
-
-<body>
-
-
-<div class="container">
-
-
-<h1>
-  📦 STOCK TAKE
-  <br>
-  <span class="rntl">by: RNTL</span>
-</h1>
-
-
-<h3 id="user"></h3>
-
-
-<p>
-Session:
-<br>
-<b id="session">Loading...</b>
-</p>
-
-
-<hr>
-
-
-<h2>📍 LOCATION</h2>
-
-
-<input 
-type="text" 
-id="locationInput"
-placeholder="Enter Location">
-
-
-<div class="location-buttons">
-
-
-<button onclick="setLocation()">
-SET LOCATION
-</button>
-
-
-<button onclick="startLocationScanner()">
-📷 SCAN LOCATION
-</button>
-
-
-</div>
-
-
-
-<p>
-Current Location:
-<br>
-<b id="currentLocation">---</b>
-</p>
-
-
-<hr>
-
-
-
-<!-- CAMERA -->
-
-<div id="cameraBox" 
-style="position:relative; width:300px; display:none; margin:auto;">
-
-
-  <div id="reader" style="width:300px;"></div>
-
-
-
-  <button
-  id="closeCameraBtn"
-  onclick="stopScanner()"
-  style="
-  display:none;
-  position:absolute;
-  right:5px;
-  top:5px;
-  z-index:9999;
-  border:none;
-  background:none;
-  color:red;
-  font-size:30px;
-  font-weight:bold;
-  padding:0;
-  width:35px;
-  height:35px;
-  cursor:pointer;">
-  X
-  </button>
-
-
-</div>
-
-
-
-
-<button id="scanBtn" class="scan-btn" onclick="startScanner()">
-▌║│▌║▌│║ START SCAN
-</button>
-
-
-
-
-<!-- SCAN METHOD -->
-
-<div class="scan-method">
-
-
-<h3>SCAN METHOD</h3>
-
-
-<label>
-
-<input 
-type="radio"
-name="scanMethod"
-value="camera"
-checked
-onchange="changeScanMode()">
-
-📷 Camera Scanner
-
-</label>
-
-
-<br>
-
-
-<label>
-
-<input 
-type="radio"
-name="scanMethod"
-value="bluetooth"
-onchange="changeScanMode()">
-
-🔫 Bluetooth Scanner
-
-</label>
-
-
-</div>
-
-
-
-<!-- BLUETOOTH SCANNER INPUT -->
-
-<input
-id="bluetoothInput"
-type="text"
-autocomplete="off"
-style="position:absolute; left:-9999px;">
-
-
-
-
-
-<div class="manual-input">
-
-<input 
-type="text"
-id="manualBarcode"
-placeholder="Enter barcode">
-
-
-<button onclick="manualAddBarcode()">
-➕ ADD ITEM
-</button>
-
-</div>
- 
-
-<p>
-Barcode:
-<b id="barcode">---</b>
-</p>
-
-
-
-<div class="list-title">
-
-
-<button class="clear-btn" onclick="clearList()">
-🗑️ Clear
-</button>
-
-
-<h2>📋 List</h2>
-
-
-<span></span>
-
-
-</div>
-
-
-
-<div id="itemList"></div>
-
-
-
-<h3>
-Total:
-<span id="total">0</span>
-</h3>
-
-
-
-<br>
-
-
-<button id="uploadBtn" onclick="uploadStockTake()">
-📤 UPLOAD LIST
-</button>
-
-
-
-
-<div class="logout-area">
-
-
-<button class="logout-btn" onclick="logout()">
-LOGOUT
-</button>
-
-
-</div>
-
-
-
-
-<p id="message"></p>
-
-
-
-</div>
-
-
-
-
-
-<!-- SCRIPTS -->
-
-<script src="app.js"></script>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
-
-<script src="scanner.js"></script>
-
-<script src="stock.js"></script>
-
-<script src="upload.js"></script>
-
-  <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center; color:white; font-size:18px; font-family:sans-serif;">
-  <div style="background:#222; padding:20px; border-radius:8px; text-align:center;">
-    <p id="loadingText">Processing...</p>
-  </div>
-</div>
+const API_URL = "https://script.google.com/macros/s/AKfycbyPmYgCYVx4nhm6eqSzPG8CuD0IsC_-7SwT8K6ZH-F8dy1jA2NoHS0eJwT-5aS83OdpqQ/exec";
+
+let currentLocation = "";
+
+// ===============================
+// HELPER: LOCK / UNLOCK SCREEN
+// ===============================
+function toggleLockScreen(lock, message = "Processing...") {
+  const overlay = document.getElementById("loadingOverlay");
+  const text = document.getElementById("loadingText");
   
-</body>
+  if (overlay && text) {
+    if (lock) {
+      text.innerText = message;
+      overlay.style.display = "flex";
+    } else {
+      overlay.style.display = "none";
+    }
+  }
+}
 
-</html>
+// ===============================
+// LOCATION
+// ===============================
+
+function setLocation(){
+
+  let input =
+  document.getElementById("locationInput").value.trim();
+
+  if(input==""){
+
+    alert("Please enter location");
+
+    return;
+
+  }
+
+  currentLocation = input.toUpperCase();
+
+  localStorage.setItem(
+    "currentLocation",
+    currentLocation
+  );
+
+  document.getElementById("currentLocation").innerHTML =
+  currentLocation;
+
+  alert(
+    "Location set: " + currentLocation
+  );
+
+}
+
+
+
+function loadLocation(){
+
+  let saved =
+  localStorage.getItem("currentLocation");
+
+  if(saved){
+
+    currentLocation = saved;
+
+    let display =
+    document.getElementById("currentLocation");
+
+    if(display){
+
+      display.innerHTML=currentLocation;
+
+    }
+
+  }
+
+}
+
+
+
+// ===============================
+// STOCK ITEMS
+// ===============================
+
+let stockItems = [];
+
+
+
+// ===============================
+// LOAD SAVED DATA
+// ===============================
+
+function loadItems(){
+
+  let saved =
+  localStorage.getItem("stockItems");
+
+  if(saved){
+
+    stockItems = JSON.parse(saved);
+
+  }
+
+  displayItems();
+
+}
+
+
+
+// ===============================
+// ADD BARCODE
+// ===============================
+
+function addBarcode(barcode){
+
+  let foundIndex = stockItems.findIndex(
+    item => item.barcode == barcode
+  );
+
+
+  if(foundIndex !== -1){
+
+    stockItems[foundIndex].qty += 1;
+
+
+    let item =
+    stockItems.splice(foundIndex,1)[0];
+
+    stockItems.unshift(item);
+
+  }else{
+
+    stockItems.unshift({
+
+      barcode: barcode,
+
+      qty:1
+
+    });
+
+  }
+
+
+  saveItems();
+
+  displayItems();
+
+}
+
+
+
+// ===============================
+// SAVE STORAGE
+// ===============================
+
+function saveItems(){
+
+  localStorage.setItem(
+    "stockItems",
+    JSON.stringify(stockItems)
+  );
+
+}
+
+
+
+// ===============================
+// DISPLAY LIST
+// ===============================
+function displayItems(){
+
+let box =
+document.getElementById("itemList");
+
+if(!box){
+
+return;
+
+}
+
+box.innerHTML = "";
+
+stockItems.forEach((item,index)=>{
+
+box.innerHTML += `
+
+<div class="item-row">
+
+  <div class="barcode">
+    ${item.barcode}
+  </div>
+
+  <div class="qty-control">
+
+    <button
+      class="qty-btn"
+      onclick="changeQty(${index},-1)">
+      -
+    </button>
+
+    <span
+      class="qty"
+      onclick="editQty(${index})"
+      style="cursor:pointer;">
+      ${item.qty}
+    </span>
+
+    <button
+      class="qty-btn"
+      onclick="changeQty(${index},1)">
+      +
+    </button>
+
+  </div>
+
+</div>
+
+`;
+
+});
+
+let total =
+document.getElementById("total");
+
+if(total){
+
+total.innerHTML = totalItems();
+
+}
+
+}
+
+// ===============================
+// CHANGE QTY (+ / -)
+// ===============================
+
+function changeQty(index,value){
+
+  stockItems[index].qty += value;
+
+
+  if(stockItems[index].qty <=0){
+
+    stockItems.splice(index,1);
+
+  }
+
+
+  saveItems();
+
+  displayItems();
+
+
+  // Return to Bluetooth scanner
+  focusBluetoothScanner();
+
+}
+
+function editQty(index){
+
+let newQty =
+prompt(
+"Enter quantity:",
+stockItems[index].qty
+);
+
+if(newQty === null){
+
+return;
+
+}
+
+newQty =
+parseInt(newQty,10);
+
+if(isNaN(newQty) || newQty <= 0){
+
+alert("Please enter a valid quantity.");
+
+return;
+
+}
+
+stockItems[index].qty =
+newQty;
+
+saveItems();
+
+displayItems();
+
+focusBluetoothScanner();
+
+}
+
+// ===============================
+// DIRECT QTY INPUT
+// ===============================
+
+function setQty(index,value){
+
+  let qty =
+  parseInt(value,10);
+
+
+  if(isNaN(qty) || qty <= 0){
+
+    stockItems.splice(index,1);
+
+  }else{
+
+    stockItems[index].qty = qty;
+
+  }
+
+
+  saveItems();
+
+  displayItems();
+
+
+  // Return to Bluetooth scanner
+  focusBluetoothScanner();
+
+}
+
+
+
+// ===============================
+// QTY ENTER KEY
+// ===============================
+
+function qtyKeyDown(event,index,input){
+
+  if(event.key === "Enter"){
+
+    event.preventDefault();
+
+    setQty(index,input.value);
+
+  }
+
+}
+
+
+
+// ===============================
+// BLUETOOTH SCANNER FOCUS
+// ===============================
+
+function focusBluetoothScanner(){
+
+  let bluetoothInput =
+  document.getElementById("bluetoothInput");
+
+  if(!bluetoothInput){
+
+    return;
+
+  }
+
+
+  let mode =
+  document.querySelector(
+    'input[name="scanMethod"]:checked'
+  );
+
+
+  if(mode && mode.value === "bluetooth"){
+
+    setTimeout(function(){
+
+      bluetoothInput.focus();
+
+    },100);
+
+  }
+
+}
+
+
+// ===============================
+// TOTAL
+// ===============================
+
+function totalItems(){
+
+  let total = 0;
+
+
+  stockItems.forEach(item=>{
+
+    total += item.qty;
+
+  });
+
+
+  return total;
+
+}
+
+
+
+// ===============================
+// CLEAR LIST
+// ===============================
+
+function clearList(){
+
+  let confirmClear =
+  confirm(
+    "⚠️ Clear all scanned items?"
+  );
+
+
+  if(confirmClear){
+
+    stockItems = [];
+
+    localStorage.removeItem(
+      "stockItems"
+    );
+
+
+    displayItems();
+
+
+    document.getElementById("barcode").innerHTML =
+    "---";
+
+
+    alert(
+      "List cleared"
+    );
+
+  }
+
+}
+
+
+
+// ===============================
+// MANUAL BARCODE INPUT
+// ===============================
+
+function manualAddBarcode(){
+
+  let barcode =
+  document.getElementById("manualBarcode").value.trim();
+
+
+  if(barcode==""){
+
+    alert("Please enter barcode");
+
+    return;
+
+  }
+
+
+  addBarcode(barcode);
+
+
+  document.getElementById("manualBarcode").value="";
+
+}
+
+
+
+// ===============================
+// SCAN MODE
+// ===============================
+
+function changeScanMode(){
+
+  let mode =
+  document.querySelector(
+    'input[name="scanMethod"]:checked'
+  ).value;
+
+
+  let scanBtn =
+  document.getElementById("scanBtn");
+
+  let bluetoothInput =
+  document.getElementById("bluetoothInput");
+
+
+  if(!scanBtn || !bluetoothInput){
+
+    console.log(
+      "Bluetooth elements missing"
+    );
+
+    return;
+
+  }
+
+
+  if(mode === "bluetooth"){
+
+    console.log(
+      "BLUETOOTH SCANNER MODE"
+    );
+
+
+    scanBtn.style.display="none";
+
+    bluetoothInput.focus();
+
+  }else{
+
+    console.log(
+      "CAMERA SCANNER MODE"
+    );
+
+
+    scanBtn.style.display="block";
+
+  }
+
+}
+
+
+
+// ===============================
+// UPLOAD STOCK TAKE (NA MAY SCREEN LOCK)
+// ===============================
+
+function uploadStockTake() {
+  let token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("No token found. Please login again.");
+    window.location.href = "index.html";
+    return;
+  }
+
+  if (!currentLocation) {
+    alert("Please set location first.");
+    return;
+  }
+
+  if (stockItems.length === 0) {
+    alert("No items to upload.");
+    return;
+  }
+
+  // I-lock ang buong screen habang nag-a-upload
+  toggleLockScreen(true, "Uploading stock take to Google Sheets...");
+
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "uploadStockTake",
+      token: token,
+      location: currentLocation,
+      items: stockItems
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    toggleLockScreen(false); // Tanggalin ang lock kapag tapos na
+
+    if (data.success) {
+      alert("Upload Successful! Batch ID: " + data.batchID);
+      // Linisin ang list pagkatapos mag-success
+      stockItems = [];
+      localStorage.removeItem("stockItems");
+      displayItems();
+    } else {
+      alert("Upload Failed: " + data.message);
+    }
+  })
+  .catch(err => {
+    toggleLockScreen(false); // Tanggalin ang lock kapag nagka-error
+    console.error(err);
+    alert("Connection Error during upload.");
+  });
+}
+
+
+
+// ===============================
+// START
+// ===============================
+
+window.addEventListener(
+  "load",
+  function(){
+
+    loadItems();
+
+    loadLocation();
+
+
+    let bluetoothInput =
+    document.getElementById("bluetoothInput");
+
+
+    if(bluetoothInput){
+
+      bluetoothInput.addEventListener(
+        "keydown",
+        function(e){
+
+          if(e.key === "Enter"){
+
+            let barcode =
+            this.value.trim();
+
+
+            if(barcode){
+
+              console.log(
+                "BLUETOOTH SCAN:",
+                barcode
+              );
+
+
+              addBarcode(barcode);
+
+            }
+
+
+            this.value="";
+
+            this.focus();
+
+          }
+
+        }
+
+      );
+
+    }
+
+  }
+);

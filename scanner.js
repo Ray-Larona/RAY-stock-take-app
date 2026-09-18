@@ -1,4 +1,17 @@
-let scanner;
+let scanner = null;
+let scannerStarting = false;
+let scanProcessed = false;
+
+
+// ===============================
+// REUSE BEEP
+// ===============================
+
+const scanBeep = new Audio(
+  "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+);
+
+scanBeep.preload = "auto";
 
 
 // ===============================
@@ -7,17 +20,40 @@ let scanner;
 
 function startScanner(){
 
+  if(scanner || scannerStarting){
+    return;
+  }
 
-  document.getElementById("cameraBox").style.display = "block";
+  scannerStarting = true;
+  scanProcessed = false;
 
-  document.getElementById("closeCameraBtn").style.display = "none";
 
-  document.getElementById("scanBtn").style.display = "none";
+  const cameraBox =
+    document.getElementById("cameraBox");
+
+  const closeCameraBtn =
+    document.getElementById("closeCameraBtn");
+
+  const scanBtn =
+    document.getElementById("scanBtn");
+
+
+  if(cameraBox){
+    cameraBox.style.display = "block";
+  }
+
+  if(closeCameraBtn){
+    closeCameraBtn.style.display = "none";
+  }
+
+  if(scanBtn){
+    scanBtn.style.display = "none";
+  }
 
 
   scanner = new Html5Qrcode("reader", {
 
-    formatsToSupport:[
+    formatsToSupport: [
 
       Html5QrcodeSupportedFormats.EAN_13,
 
@@ -35,144 +71,294 @@ function startScanner(){
 
     ],
 
-    verbose:false
+    verbose: false
 
   });
 
 
-
   scanner.start(
 
-
     {
-      facingMode:"environment"
+      facingMode: "environment"
     },
 
-
     {
 
+      fps: 10,
 
-      fps:10,
+      qrbox: function(
+        viewfinderWidth,
+        viewfinderHeight
+      ){
 
-
-      qrbox:function(viewfinderWidth, viewfinderHeight){
-
-
-        let width = Math.min(
-          Math.floor(viewfinderWidth * 0.9),
-          350
-        );
-
+        const width =
+          Math.min(
+            Math.floor(viewfinderWidth * 0.9),
+            350
+          );
 
         return {
 
-          width:width,
+          width: width,
 
-          height:Math.floor(width * 0.45)
+          height:
+            Math.floor(width * 0.45)
 
         };
 
+      }
+
+    },
+
+
+    function(decodedText){
+
+      // Prevent duplicate callback
+      if(scanProcessed){
+        return;
+      }
+
+      scanProcessed = true;
+
+
+      console.log(
+        "SCAN:",
+        decodedText
+      );
+
+
+      // =========================
+      // BEEP
+      // =========================
+
+      try{
+
+        scanBeep.currentTime = 0;
+
+        const beepPromise =
+          scanBeep.play();
+
+        if(beepPromise){
+
+          beepPromise.catch(function(){
+            // Ignore browser audio restriction
+          });
+
+        }
+
+      }catch(error){
+
+        console.log(
+          "Beep error:",
+          error
+        );
 
       }
 
 
-    },
-
-
-    (decodedText)=>{
-
-
-      console.log("SCAN:",decodedText);
-
-
-
-      // BEEP
-
-      let beep = new Audio(
-        "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
-      );
-
-      beep.play();
-
-
-
+      // =========================
       // SHOW BARCODE
+      // =========================
 
-      document.getElementById("barcode").innerHTML =
-      decodedText;
+      const barcodeElement =
+        document.getElementById("barcode");
+
+      if(barcodeElement){
+
+        barcodeElement.textContent =
+          decodedText;
+
+      }
 
 
-
+      // =========================
       // ADD ITEM
+      // =========================
 
       addBarcode(decodedText);
 
 
-
-      console.log("ADDED:",decodedText);
-
-
-
-      // STOP AFTER SUCCESS SCAN
-
-      scanner.stop().then(()=>{
+      console.log(
+        "ADDED:",
+        decodedText
+      );
 
 
-        document.getElementById("cameraBox").style.display="none";
+      // =========================
+      // STOP CAMERA
+      // =========================
+
+      const activeScanner =
+        scanner;
 
 
-        document.getElementById("closeCameraBtn").style.display="none";
+      if(!activeScanner){
+
+        finishScannerUI();
+
+        return;
+
+      }
 
 
-        document.getElementById("scanBtn").style.display="block";
+      activeScanner
+        .stop()
+
+        .then(function(){
+
+          console.log(
+            "CAMERA STOPPED"
+          );
 
 
-      });
+          // Clear scanner resources
+          try{
+
+            activeScanner.clear();
+
+          }catch(error){
+
+            console.log(
+              "Scanner clear error:",
+              error
+            );
+
+          }
 
 
+          scanner = null;
+
+          scannerStarting = false;
+
+          finishScannerUI();
+
+        })
+
+        .catch(function(error){
+
+          console.log(
+            "Scanner stop error:",
+            error
+          );
+
+
+          // Even if stop reports an error,
+          // restore the original UI.
+          scanner = null;
+
+          scannerStarting = false;
+
+          finishScannerUI();
+
+        });
 
     },
 
 
     function(){
 
-
-      // ignore scan misses
-
+      // Ignore scan misses
 
     }
 
-
   )
 
+  .then(function(){
 
-  .then(()=>{
+    scannerStarting = false;
 
 
-    document.getElementById("closeCameraBtn").style.display="block";
+    // Only show X while camera is actually running
+    if(
+      scanner &&
+      !scanProcessed &&
+      closeCameraBtn
+    ){
 
+      closeCameraBtn.style.display = "block";
+
+    }
 
   })
 
+  .catch(function(error){
 
-  .catch(error=>{
-
-
-    console.log("CAMERA ERROR:",error);
-
-
-    alert(
-      "Camera unavailable:\n\n" + error
+    console.log(
+      "CAMERA ERROR:",
+      error
     );
 
 
-  });
+    scanner = null;
 
+    scannerStarting = false;
+    scanProcessed = false;
+
+
+    if(cameraBox){
+      cameraBox.style.display = "none";
+    }
+
+    if(closeCameraBtn){
+      closeCameraBtn.style.display = "none";
+    }
+
+    if(scanBtn){
+      scanBtn.style.display = "block";
+    }
+
+
+    alert(
+      "Camera unavailable:\n\n" +
+      error
+    );
+
+  });
 
 }
 
 
+// ===============================
+// FINISH CAMERA UI
+// ===============================
 
+function finishScannerUI(){
+
+  const cameraBox =
+    document.getElementById("cameraBox");
+
+  const closeCameraBtn =
+    document.getElementById("closeCameraBtn");
+
+  const scanBtn =
+    document.getElementById("scanBtn");
+
+
+  if(cameraBox){
+
+    cameraBox.style.display =
+      "none";
+
+  }
+
+  if(closeCameraBtn){
+
+    closeCameraBtn.style.display =
+      "none";
+
+  }
+
+  if(scanBtn){
+
+    scanBtn.style.display =
+      "block";
+
+  }
+
+
+  scanProcessed = false;
+
+}
 
 
 // ===============================
@@ -181,29 +367,98 @@ function startScanner(){
 
 function stopScanner(){
 
-
-  if(scanner){
-
-
-    scanner.stop().then(()=>{
-
-
-      document.getElementById("cameraBox").style.display="none";
-
-
-      document.getElementById("closeCameraBtn").style.display="none";
-
-
-      document.getElementById("scanBtn").style.display="block";
-
-
-      scanner.clear();
-
-
-    });
-
-
+  if(!scanner){
+    return;
   }
 
+
+  const activeScanner =
+    scanner;
+
+
+  const cameraBox =
+    document.getElementById("cameraBox");
+
+  const closeCameraBtn =
+    document.getElementById("closeCameraBtn");
+
+  const scanBtn =
+    document.getElementById("scanBtn");
+
+
+  // Prevent another scan callback
+  scanProcessed = true;
+
+
+  activeScanner
+    .stop()
+
+    .then(function(){
+
+      try{
+
+        activeScanner.clear();
+
+      }catch(error){
+
+        console.log(
+          "Scanner clear error:",
+          error
+        );
+
+      }
+
+
+      scanner = null;
+
+      scannerStarting = false;
+
+
+      if(cameraBox){
+        cameraBox.style.display = "none";
+      }
+
+      if(closeCameraBtn){
+        closeCameraBtn.style.display = "none";
+      }
+
+      if(scanBtn){
+        scanBtn.style.display = "block";
+      }
+
+
+      scanProcessed = false;
+
+    })
+
+    .catch(function(error){
+
+      console.log(
+        "Scanner stop error:",
+        error
+      );
+
+
+      scanner = null;
+
+      scannerStarting = false;
+
+
+      if(cameraBox){
+        cameraBox.style.display = "none";
+      }
+
+      if(closeCameraBtn){
+        closeCameraBtn.style.display = "none";
+      }
+
+      if(scanBtn){
+        scanBtn.style.display = "block";
+      }
+
+
+      scanProcessed = false;
+
+    });
 
 }

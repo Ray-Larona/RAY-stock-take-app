@@ -2,82 +2,157 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyPmYgCYVx4nhm6eqSzPG8C
 
 
 // ===============================
+// API HELPER
+// ===============================
+
+function apiPost(data){
+
+  return fetch(API_URL, {
+
+    method: "POST",
+
+    body: JSON.stringify(data)
+
+  })
+  .then(function(response){
+
+    if(!response.ok){
+
+      throw new Error(
+        "Server error: " + response.status
+      );
+
+    }
+
+    return response.json();
+
+  });
+
+}
+
+
+// ===============================
 // LOGIN
 // ===============================
 
 function login(){
 
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
+  const usernameElement =
+    document.getElementById("username");
 
-  if(username=="" || password==""){
-    document.getElementById("message").innerHTML="Please enter username and password.";
+  const passwordElement =
+    document.getElementById("password");
+
+  const messageElement =
+    document.getElementById("message");
+
+  const username =
+    usernameElement.value.trim();
+
+  const password =
+    passwordElement.value.trim();
+
+
+  if(username === "" || password === ""){
+
+    messageElement.innerHTML =
+      "Please enter username and password.";
+
     return;
+
   }
 
-  const btn=document.getElementById("loginBtn");
+
+  const btn =
+    document.getElementById("loginBtn");
+
 
   if(btn){
-    btn.disabled=true;
-    btn.innerHTML="⏳ LOGGING IN...";
+
+    btn.disabled = true;
+
+    btn.innerHTML =
+      "⏳ LOGGING IN...";
+
   }
 
-  fetch(API_URL,{
 
-    method:"POST",
+  apiPost({
 
-    body:JSON.stringify({
+    action: "login",
 
-      action:"login",
-      username:username,
-      password:password
+    username: username,
 
-    })
+    password: password
 
   })
 
-  .then(res=>res.json())
-
-  .then(data=>{
+  .then(function(data){
 
     console.log(data);
 
+
     if(data.success){
 
-      localStorage.setItem("token",data.token);
-      localStorage.setItem("name",data.name);
-      localStorage.setItem("role",data.role);
+      localStorage.setItem(
+        "token",
+        data.token
+      );
 
-      window.location.href="stock.html";
+      localStorage.setItem(
+        "name",
+        data.name
+      );
+
+      localStorage.setItem(
+        "role",
+        data.role
+      );
+
+
+      window.location.href =
+        "stock.html";
 
     }else{
 
-      document.getElementById("message").innerHTML=data.message;
+      messageElement.innerHTML =
+        data.message;
+
 
       if(btn){
-        btn.disabled=false;
-        btn.innerHTML="LOGIN";
+
+        btn.disabled = false;
+
+        btn.innerHTML =
+          "LOGIN";
+
       }
 
     }
 
   })
 
-  .catch(err=>{
+  .catch(function(error){
 
-    document.getElementById("message").innerHTML="Connection Error";
+    console.log(error);
 
-    console.log(err);
+
+    messageElement.innerHTML =
+      "Connection Error";
+
 
     if(btn){
-      btn.disabled=false;
-      btn.innerHTML="LOGIN";
+
+      btn.disabled = false;
+
+      btn.innerHTML =
+        "LOGIN";
+
     }
 
   });
 
 }
-
 
 
 // ===============================
@@ -86,44 +161,61 @@ function login(){
 
 function checkLogin(){
 
-  let token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("token");
 
-  console.log("TOKEN:",token);
+
+  console.log(
+    "TOKEN:",
+    token
+  );
+
 
   if(!token){
 
     alert("NO TOKEN");
 
-    window.location.href="index.html";
+    window.location.href =
+      "index.html";
 
     return;
 
   }
 
-  fetch(API_URL,{
 
-    method:"POST",
+  apiPost({
 
-    body:JSON.stringify({
+    action: "checkSession",
 
-      action:"checkSession",
-
-      token:token
-
-    })
+    token: token
 
   })
 
-  .then(res=>res.json())
+  .then(function(data){
 
-  .then(data=>{
+    console.log(
+      "SESSION RESULT:",
+      data
+    );
 
-    console.log("SESSION RESULT:",data);
 
     if(data.success){
 
-      document.getElementById("user").innerHTML =
-      "👤 "+data.name+" ("+data.role+")";
+      const userElement =
+        document.getElementById("user");
+
+
+      if(userElement){
+
+        userElement.innerHTML =
+          "👤 " +
+          data.name +
+          " (" +
+          data.role +
+          ")";
+
+      }
+
 
       loadSession();
 
@@ -133,14 +225,25 @@ function checkLogin(){
 
       localStorage.clear();
 
-      window.location.href="index.html";
+      window.location.href =
+        "index.html";
 
     }
+
+  })
+
+  .catch(function(error){
+
+    console.log(
+      "Session check error:",
+      error
+    );
+
+    alert("Connection Error");
 
   });
 
 }
-
 
 
 // ===============================
@@ -149,35 +252,47 @@ function checkLogin(){
 
 function loadSession(){
 
-  fetch(API_URL,{
+  apiPost({
 
-    method:"POST",
-
-    body:JSON.stringify({
-
-      action:"getSession"
-
-    })
+    action: "getSession"
 
   })
 
-  .then(res=>res.json())
+  .then(function(data){
 
-  .then(data=>{
+    console.log(
+      "ACTIVE SESSION:",
+      data
+    );
 
-    console.log("ACTIVE SESSION:",data);
 
     if(data.success){
 
-      document.getElementById("session").innerHTML =
-      data.session;
+      const sessionElement =
+        document.getElementById("session");
+
+
+      if(sessionElement){
+
+        sessionElement.innerHTML =
+          data.session;
+
+      }
 
     }
+
+  })
+
+  .catch(function(error){
+
+    console.log(
+      "Session load error:",
+      error
+    );
 
   });
 
 }
-
 
 
 // ===============================
@@ -186,169 +301,217 @@ function loadSession(){
 
 function logout(){
 
-  let token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("token");
 
 
-  const btn = document.querySelector(".logout-btn");
+  const btn =
+    document.querySelector(".logout-btn");
 
 
   if(btn){
 
     btn.disabled = true;
 
-    btn.innerHTML = "⏳ LOGGING OUT...";
+    btn.innerHTML =
+      "⏳ LOGGING OUT...";
 
   }
-
 
 
   if(!token){
 
     localStorage.clear();
 
-    window.location.href="index.html";
+    window.location.href =
+      "index.html";
 
     return;
 
   }
 
 
+  apiPost({
 
-  fetch(API_URL,{
+    action: "logout",
 
-    method:"POST",
-
-    body:JSON.stringify({
-
-      action:"logout",
-
-      token:token
-
-    })
+    token: token
 
   })
 
+  .then(function(data){
 
-  .then(res=>res.json())
-
-
-  .then(data=>{
-
-
-    console.log("LOGOUT RESULT:",data);
-
+    console.log(
+      "LOGOUT RESULT:",
+      data
+    );
 
 
     localStorage.clear();
 
-
-
-    window.location.href="index.html";
-
-
+    window.location.href =
+      "index.html";
 
   })
 
+  .catch(function(error){
 
-  .catch(err=>{
-
-
-    console.log(err);
-
-
+    console.log(error);
 
     localStorage.clear();
 
-
-
-    window.location.href="index.html";
-
+    window.location.href =
+      "index.html";
 
   });
 
-
-
 }
 
+
 // ===============================
-// HEARTBEAT EVERY 5 MINUTES
+// HEARTBEAT
 // ===============================
+
+let heartbeatRunning = false;
+let heartbeatTimer = null;
+
 
 function startHeartbeat(){
 
-  console.log("HEARTBEAT STARTED");
-
-  setInterval(function(){
-
-
-    let token = localStorage.getItem("token");
+  console.log(
+    "HEARTBEAT STARTED"
+  );
 
 
-    if(token){
+  // Prevent duplicate heartbeat timers
+  if(heartbeatTimer){
+
+    clearTimeout(
+      heartbeatTimer
+    );
+
+  }
 
 
-      fetch(API_URL,{
+  function sendHeartbeat(){
 
-        method:"POST",
-
-        body:JSON.stringify({
-
-          action:"heartbeat",
-
-          token:token
-
-        })
-
-      })
-
-      .then(res=>res.json())
-
-      .then(data=>{
-
-        console.log("HEARTBEAT:",data);
+    const token =
+      localStorage.getItem("token");
 
 
-        if(!data.success){
+    if(!token){
 
-          localStorage.clear();
-
-          window.location.href="index.html";
-
-        }
-
-
-      })
-
-      .catch(err=>{
-
-        console.log("Heartbeat error:",err);
-
-      });
-
+      return;
 
     }
 
 
-  },300000); // 5 mins
+    // Prevent overlapping heartbeat requests
+    if(heartbeatRunning){
 
+      heartbeatTimer =
+        setTimeout(
+          sendHeartbeat,
+          300000
+        );
+
+      return;
+
+    }
+
+
+    heartbeatRunning = true;
+
+
+    apiPost({
+
+      action: "heartbeat",
+
+      token: token
+
+    })
+
+    .then(function(data){
+
+      console.log(
+        "HEARTBEAT:",
+        data
+      );
+
+
+      if(!data.success){
+
+        localStorage.clear();
+
+        window.location.href =
+          "index.html";
+
+        return;
+
+      }
+
+    })
+
+    .catch(function(error){
+
+      console.log(
+        "Heartbeat error:",
+        error
+      );
+
+    })
+
+    .finally(function(){
+
+      heartbeatRunning = false;
+
+
+      // Schedule next heartbeat
+      heartbeatTimer =
+        setTimeout(
+          sendHeartbeat,
+          300000
+        );
+
+    });
+
+  }
+
+
+  // Start first heartbeat after 5 minutes
+  heartbeatTimer =
+    setTimeout(
+      sendHeartbeat,
+      300000
+    );
 
 }
+
 
 // ===============================
 // START
 // ===============================
 
-window.onload=function(){
+window.addEventListener(
+  "load",
+  function(){
 
-  if(document.getElementById("user")){
+    const userElement =
+      document.getElementById("user");
 
-    console.log("STOCK PAGE DETECTED");
 
-    checkLogin();
+    if(userElement){
 
-    startHeartbeat();
+      console.log(
+        "STOCK PAGE DETECTED"
+      );
+
+
+      checkLogin();
+
+      startHeartbeat();
+
+    }
 
   }
-
-}
-    
+);

@@ -1,374 +1,561 @@
-let scanner = null;
-let scannerStarting = false;
-
-// Reuse ONE audio object instead of creating a new one every scan
-const scanBeep = new Audio(
-  "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
-);
-
-scanBeep.preload = "auto";
-
+let currentLocation = "";
 
 // ===============================
-// START BARCODE SCANNER
+// LOCATION
 // ===============================
 
-function startScanner(){
+function setLocation(){
 
-  // Prevent accidental double-start
-  if(scanner || scannerStarting){
+  let input =
+  document.getElementById("locationInput").value.trim();
+
+  if(input==""){
+
+    alert("Please enter location");
+
     return;
+
   }
 
-  scannerStarting = true;
-
-
-  const cameraBox =
-    document.getElementById("cameraBox");
-
-  const closeCameraBtn =
-    document.getElementById("closeCameraBtn");
-
-  const scanBtn =
-    document.getElementById("scanBtn");
-
-
-  if(cameraBox){
-    cameraBox.style.display = "block";
-  }
-
-  if(closeCameraBtn){
-    closeCameraBtn.style.display = "none";
-  }
-
-  if(scanBtn){
-    scanBtn.style.display = "none";
-  }
-
-
-  // Create scanner
-  scanner = new Html5Qrcode("reader", {
-
-    formatsToSupport: [
-
-      Html5QrcodeSupportedFormats.EAN_13,
-
-      Html5QrcodeSupportedFormats.EAN_8,
-
-      Html5QrcodeSupportedFormats.UPC_A,
-
-      Html5QrcodeSupportedFormats.UPC_E,
-
-      Html5QrcodeSupportedFormats.CODE_128,
-
-      Html5QrcodeSupportedFormats.CODE_39,
-
-      Html5QrcodeSupportedFormats.QR_CODE
-
-    ],
-
-    verbose: false
-
-  });
-
-
-  scanner.start(
-
-    {
-      facingMode: "environment"
-    },
-
-    {
-
-      fps: 10,
-
-      qrbox: function(
-        viewfinderWidth,
-        viewfinderHeight
-      ){
-
-        const width =
-          Math.min(
-            Math.floor(viewfinderWidth * 0.9),
-            350
-          );
-
-        return {
-
-          width: width,
-
-          height:
-            Math.floor(width * 0.45)
-
-        };
-
-      }
-
-    },
-
-
-    function(decodedText){
-
-      console.log(
-        "SCAN:",
-        decodedText
-      );
-
-
-      // =========================
-      // BEEP
-      // =========================
-
-      try{
-
-        scanBeep.currentTime = 0;
-
-        const beepPromise =
-          scanBeep.play();
-
-        if(beepPromise){
-          beepPromise.catch(function(){
-            // Ignore browser audio restrictions
-          });
-        }
-
-      }catch(error){
-
-        console.log(
-          "Beep error:",
-          error
-        );
-
-      }
-
-
-      // =========================
-      // SHOW BARCODE
-      // =========================
-
-      const barcodeElement =
-        document.getElementById("barcode");
-
-      if(barcodeElement){
-
-        barcodeElement.textContent =
-          decodedText;
-
-      }
-
-
-      // =========================
-      // ADD ITEM
-      // =========================
-
-      addBarcode(decodedText);
-
-
-      console.log(
-        "ADDED:",
-        decodedText
-      );
-
-
-      // =========================
-      // STOP AFTER SUCCESS
-      // =========================
-
-      const activeScanner = scanner;
-
-      if(!activeScanner){
-        return;
-      }
-
-
-      // Prevent another successful
-      // callback from processing
-      scanner = null;
-
-
-      activeScanner
-        .stop()
-        .then(function(){
-
-          if(cameraBox){
-            cameraBox.style.display = "none";
-          }
-
-          if(closeCameraBtn){
-            closeCameraBtn.style.display = "none";
-          }
-
-          if(scanBtn){
-            scanBtn.style.display = "block";
-          }
-
-
-          // Clear scanner resources
-          try{
-
-            activeScanner.clear();
-
-          }catch(error){
-
-            console.log(
-              "Scanner clear error:",
-              error
-            );
-
-          }
-
-        })
-        .catch(function(error){
-
-          console.log(
-            "Scanner stop error:",
-            error
-          );
-
-          if(cameraBox){
-            cameraBox.style.display = "none";
-          }
-
-          if(closeCameraBtn){
-            closeCameraBtn.style.display = "none";
-          }
-
-          if(scanBtn){
-            scanBtn.style.display = "block";
-          }
-
-        });
-
-    },
-
-
-    function(){
-
-      // Ignore scan misses
-
-    }
-
-  )
-
-  .then(function(){
-
-    scannerStarting = false;
-
-
-    if(closeCameraBtn){
-      closeCameraBtn.style.display = "block";
-    }
-
-  })
-
-  .catch(function(error){
-
-    console.log(
-      "CAMERA ERROR:",
-      error
-    );
-
-
-    scannerStarting = false;
-    scanner = null;
-
-
-    if(cameraBox){
-      cameraBox.style.display = "none";
-    }
-
-    if(scanBtn){
-      scanBtn.style.display = "block";
-    }
-
-
-    alert(
-      "Camera unavailable:\n\n" +
-      error
-    );
-
-  });
+  currentLocation = input.toUpperCase();
+
+  localStorage.setItem(
+    "currentLocation",
+    currentLocation
+  );
+
+  document.getElementById("currentLocation").innerHTML =
+  currentLocation;
+
+  alert(
+    "Location set: " + currentLocation
+  );
 
 }
 
 
-// ===============================
-// CLOSE CAMERA X
-// ===============================
 
-function stopScanner(){
+function loadLocation(){
 
-  if(!scanner){
-    return;
+  let saved =
+  localStorage.getItem("currentLocation");
+
+  if(saved){
+
+    currentLocation = saved;
+
+    let display =
+    document.getElementById("currentLocation");
+
+    if(display){
+
+      display.innerHTML=currentLocation;
+
+    }
+
   }
 
-
-  const activeScanner = scanner;
-
-  scanner = null;
+}
 
 
-  const cameraBox =
-    document.getElementById("cameraBox");
 
-  const closeCameraBtn =
-    document.getElementById("closeCameraBtn");
+// ===============================
+// STOCK ITEMS
+// ===============================
 
-  const scanBtn =
-    document.getElementById("scanBtn");
+let stockItems = [];
 
 
-  activeScanner
-    .stop()
-    .then(function(){
 
-      if(cameraBox){
-        cameraBox.style.display = "none";
-      }
+// ===============================
+// LOAD SAVED DATA
+// ===============================
 
-      if(closeCameraBtn){
-        closeCameraBtn.style.display = "none";
-      }
+function loadItems(){
 
-      if(scanBtn){
-        scanBtn.style.display = "block";
-      }
+  let saved =
+  localStorage.getItem("stockItems");
 
+  if(saved){
 
-      try{
+    stockItems = JSON.parse(saved);
 
-        activeScanner.clear();
+  }
 
-      }catch(error){
+  displayItems();
 
-        console.log(
-          "Scanner clear error:",
-          error
-        );
-
-      }
-
-    })
-    .catch(function(error){
-
-      console.log(
-        "Scanner stop error:",
-        error
-      );
+}
 
 
-      if(cameraBox){
-        cameraBox.style.display = "none";
-      }
 
-      if(closeCameraBtn){
-        closeCameraBtn.style.display = "none";
-      }
+// ===============================
+// ADD BARCODE
+// ===============================
 
-      if(scanBtn){
-        scanBtn.style.display = "block";
-      }
+function addBarcode(barcode){
+
+  let foundIndex = stockItems.findIndex(
+    item => item.barcode == barcode
+  );
+
+
+  if(foundIndex !== -1){
+
+    stockItems[foundIndex].qty += 1;
+
+
+    let item =
+    stockItems.splice(foundIndex,1)[0];
+
+    stockItems.unshift(item);
+
+  }else{
+
+    stockItems.unshift({
+
+      barcode: barcode,
+
+      qty:1
 
     });
 
+  }
+
+
+  saveItems();
+
+  displayItems();
+
 }
+
+
+
+// ===============================
+// SAVE STORAGE
+// ===============================
+
+function saveItems(){
+
+  localStorage.setItem(
+    "stockItems",
+    JSON.stringify(stockItems)
+  );
+
+}
+
+
+
+// ===============================
+// DISPLAY LIST
+// ===============================
+function displayItems(){
+
+let box =
+document.getElementById("itemList");
+
+if(!box){
+
+return;
+
+}
+
+box.innerHTML = "";
+
+stockItems.forEach((item,index)=>{
+
+box.innerHTML += `
+
+<div class="item-row">
+
+  <div class="barcode">
+    ${item.barcode}
+  </div>
+
+  <div class="qty-control">
+
+    <button
+      class="qty-btn"
+      onclick="changeQty(${index},-1)">
+      -
+    </button>
+
+    <span
+      class="qty"
+      onclick="editQty(${index})"
+      style="cursor:pointer;">
+      ${item.qty}
+    </span>
+
+    <button
+      class="qty-btn"
+      onclick="changeQty(${index},1)">
+      +
+    </button>
+
+  </div>
+
+</div>
+
+`;
+
+});
+
+let total =
+document.getElementById("total");
+
+if(total){
+
+total.innerHTML = totalItems();
+
+}
+
+}
+
+// ===============================
+// CHANGE QTY (+ / -)
+// ===============================
+
+function changeQty(index,value){
+
+  stockItems[index].qty += value;
+
+
+  if(stockItems[index].qty <=0){
+
+    stockItems.splice(index,1);
+
+  }
+
+
+  saveItems();
+
+  displayItems();
+
+
+  // Return to Bluetooth scanner
+  focusBluetoothScanner();
+
+}
+
+function editQty(index){
+
+let newQty =
+prompt(
+"Enter quantity:",
+stockItems[index].qty
+);
+
+if(newQty === null){
+
+return;
+
+}
+
+newQty =
+parseInt(newQty,10);
+
+if(isNaN(newQty) || newQty <= 0){
+
+alert("Please enter a valid quantity.");
+
+return;
+
+}
+
+stockItems[index].qty =
+newQty;
+
+saveItems();
+
+displayItems();
+
+focusBluetoothScanner();
+
+}
+
+// ===============================
+// DIRECT QTY INPUT
+// ===============================
+
+function setQty(index,value){
+
+  let qty =
+  parseInt(value,10);
+
+
+  if(isNaN(qty) || qty <= 0){
+
+    stockItems.splice(index,1);
+
+  }else{
+
+    stockItems[index].qty = qty;
+
+  }
+
+
+  saveItems();
+
+  displayItems();
+
+
+  // Return to Bluetooth scanner
+  focusBluetoothScanner();
+
+}
+
+
+
+// ===============================
+// QTY ENTER KEY
+// ===============================
+
+function qtyKeyDown(event,index,input){
+
+  if(event.key === "Enter"){
+
+    event.preventDefault();
+
+    setQty(index,input.value);
+
+  }
+
+}
+
+
+
+// ===============================
+// BLUETOOTH SCANNER FOCUS
+// ===============================
+
+function focusBluetoothScanner(){
+
+  let bluetoothInput =
+  document.getElementById("bluetoothInput");
+
+  if(!bluetoothInput){
+
+    return;
+
+  }
+
+
+  let mode =
+  document.querySelector(
+    'input[name="scanMethod"]:checked'
+  );
+
+
+  if(mode && mode.value === "bluetooth"){
+
+    setTimeout(function(){
+
+      bluetoothInput.focus();
+
+    },100);
+
+  }
+
+}
+
+
+// ===============================
+// TOTAL
+// ===============================
+
+function totalItems(){
+
+  let total = 0;
+
+
+  stockItems.forEach(item=>{
+
+    total += item.qty;
+
+  });
+
+
+  return total;
+
+}
+
+
+
+// ===============================
+// CLEAR LIST
+// ===============================
+
+function clearList(){
+
+  let confirmClear =
+  confirm(
+    "⚠️ Clear all scanned items?"
+  );
+
+
+  if(confirmClear){
+
+    stockItems = [];
+
+    localStorage.removeItem(
+      "stockItems"
+    );
+
+
+    displayItems();
+
+
+    document.getElementById("barcode").innerHTML =
+    "---";
+
+
+    alert(
+      "List cleared"
+    );
+
+  }
+
+}
+
+
+
+// ===============================
+// MANUAL BARCODE INPUT
+// ===============================
+
+function manualAddBarcode(){
+
+  let barcode =
+  document.getElementById("manualBarcode").value.trim();
+
+
+  if(barcode==""){
+
+    alert("Please enter barcode");
+
+    return;
+
+  }
+
+
+  addBarcode(barcode);
+
+
+  document.getElementById("manualBarcode").value="";
+
+}
+
+
+
+// ===============================
+// SCAN MODE
+// ===============================
+
+function changeScanMode(){
+
+  let mode =
+  document.querySelector(
+    'input[name="scanMethod"]:checked'
+  ).value;
+
+
+  let scanBtn =
+  document.getElementById("scanBtn");
+
+  let bluetoothInput =
+  document.getElementById("bluetoothInput");
+
+
+  if(!scanBtn || !bluetoothInput){
+
+    console.log(
+      "Bluetooth elements missing"
+    );
+
+    return;
+
+  }
+
+
+  if(mode === "bluetooth"){
+
+    console.log(
+      "BLUETOOTH SCANNER MODE"
+    );
+
+
+    scanBtn.style.display="none";
+
+    bluetoothInput.focus();
+
+  }else{
+
+    console.log(
+      "CAMERA SCANNER MODE"
+    );
+
+
+    scanBtn.style.display="block";
+
+  }
+
+}
+
+
+
+// ===============================
+// START
+// ===============================
+
+window.addEventListener(
+  "load",
+  function(){
+
+    loadItems();
+
+    loadLocation();
+
+
+    let bluetoothInput =
+    document.getElementById("bluetoothInput");
+
+
+    if(bluetoothInput){
+
+      bluetoothInput.addEventListener(
+        "keydown",
+        function(e){
+
+          if(e.key === "Enter"){
+
+            let barcode =
+            this.value.trim();
+
+
+            if(barcode){
+
+              console.log(
+                "BLUETOOTH SCAN:",
+                barcode
+              );
+
+
+              addBarcode(barcode);
+
+            }
+
+
+            this.value="";
+
+            this.focus();
+
+          }
+
+        }
+
+      );
+
+    }
+
+  }
+);

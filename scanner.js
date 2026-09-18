@@ -1,12 +1,4 @@
-let scanner = null;
-let scannerStarting = false;
-
-// Reuse ONE audio object instead of creating a new one every scan
-const scanBeep = new Audio(
-  "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
-);
-
-scanBeep.preload = "auto";
+let scanner;
 
 
 // ===============================
@@ -15,41 +7,17 @@ scanBeep.preload = "auto";
 
 function startScanner(){
 
-  // Prevent accidental double-start
-  if(scanner || scannerStarting){
-    return;
-  }
 
-  scannerStarting = true;
+  document.getElementById("cameraBox").style.display = "block";
 
+  document.getElementById("closeCameraBtn").style.display = "none";
 
-  const cameraBox =
-    document.getElementById("cameraBox");
-
-  const closeCameraBtn =
-    document.getElementById("closeCameraBtn");
-
-  const scanBtn =
-    document.getElementById("scanBtn");
+  document.getElementById("scanBtn").style.display = "none";
 
 
-  if(cameraBox){
-    cameraBox.style.display = "block";
-  }
-
-  if(closeCameraBtn){
-    closeCameraBtn.style.display = "none";
-  }
-
-  if(scanBtn){
-    scanBtn.style.display = "none";
-  }
-
-
-  // Create scanner
   scanner = new Html5Qrcode("reader", {
 
-    formatsToSupport: [
+    formatsToSupport:[
 
       Html5QrcodeSupportedFormats.EAN_13,
 
@@ -67,229 +35,144 @@ function startScanner(){
 
     ],
 
-    verbose: false
+    verbose:false
 
   });
 
 
+
   scanner.start(
 
+
     {
-      facingMode: "environment"
+      facingMode:"environment"
     },
 
+
     {
 
-      fps: 10,
 
-      qrbox: function(
-        viewfinderWidth,
-        viewfinderHeight
-      ){
+      fps:10,
 
-        const width =
-          Math.min(
-            Math.floor(viewfinderWidth * 0.9),
-            350
-          );
+
+      qrbox:function(viewfinderWidth, viewfinderHeight){
+
+
+        let width = Math.min(
+          Math.floor(viewfinderWidth * 0.9),
+          350
+        );
+
 
         return {
 
-          width: width,
+          width:width,
 
-          height:
-            Math.floor(width * 0.45)
+          height:Math.floor(width * 0.45)
 
         };
 
+
       }
+
 
     },
 
 
-    function(decodedText){
+    (decodedText)=>{
 
-      console.log(
-        "SCAN:",
-        decodedText
+
+      console.log("SCAN:",decodedText);
+
+
+
+      // BEEP
+
+      let beep = new Audio(
+        "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
       );
 
-
-      // =========================
-      // BEEP
-      // =========================
-
-      try{
-
-        scanBeep.currentTime = 0;
-
-        const beepPromise =
-          scanBeep.play();
-
-        if(beepPromise){
-          beepPromise.catch(function(){
-            // Ignore browser audio restrictions
-          });
-        }
-
-      }catch(error){
-
-        console.log(
-          "Beep error:",
-          error
-        );
-
-      }
+      beep.play();
 
 
-      // =========================
+
       // SHOW BARCODE
-      // =========================
 
-      const barcodeElement =
-        document.getElementById("barcode");
-
-      if(barcodeElement){
-
-        barcodeElement.textContent =
-          decodedText;
-
-      }
+      document.getElementById("barcode").innerHTML =
+      decodedText;
 
 
-      // =========================
+
       // ADD ITEM
-      // =========================
 
       addBarcode(decodedText);
 
 
-      console.log(
-        "ADDED:",
-        decodedText
-      );
+
+      console.log("ADDED:",decodedText);
 
 
-      // =========================
-      // STOP AFTER SUCCESS
-      // =========================
 
-      const activeScanner = scanner;
+      // STOP AFTER SUCCESS SCAN
 
-      if(!activeScanner){
-        return;
-      }
+      scanner.stop().then(()=>{
 
 
-      // Prevent another successful
-      // callback from processing
-      scanner = null;
+        document.getElementById("cameraBox").style.display="none";
 
 
-      activeScanner
-        .stop()
-        .then(function(){
-
-          if(cameraBox){
-            cameraBox.style.display = "none";
-          }
-
-          if(closeCameraBtn){
-            closeCameraBtn.style.display = "none";
-          }
-
-          if(scanBtn){
-            scanBtn.style.display = "block";
-          }
+        document.getElementById("closeCameraBtn").style.display="none";
 
 
-          // Clear scanner resources
-          try{
+        document.getElementById("scanBtn").style.display="block";
 
-            activeScanner.clear();
 
-          }catch(error){
+      });
 
-            console.log(
-              "Scanner clear error:",
-              error
-            );
 
-          }
-
-        })
-        .catch(function(error){
-
-          console.log(
-            "Scanner stop error:",
-            error
-          );
-
-          if(cameraBox){
-            cameraBox.style.display = "none";
-          }
-
-          if(closeCameraBtn){
-            closeCameraBtn.style.display = "none";
-          }
-
-          if(scanBtn){
-            scanBtn.style.display = "block";
-          }
-
-        });
 
     },
 
 
     function(){
 
-      // Ignore scan misses
+
+      // ignore scan misses
+
 
     }
+
 
   )
 
-  .then(function(){
 
-    scannerStarting = false;
+  .then(()=>{
 
 
-    if(closeCameraBtn){
-      closeCameraBtn.style.display = "block";
-    }
+    document.getElementById("closeCameraBtn").style.display="block";
+
 
   })
 
-  .catch(function(error){
 
-    console.log(
-      "CAMERA ERROR:",
-      error
-    );
+  .catch(error=>{
 
 
-    scannerStarting = false;
-    scanner = null;
-
-
-    if(cameraBox){
-      cameraBox.style.display = "none";
-    }
-
-    if(scanBtn){
-      scanBtn.style.display = "block";
-    }
+    console.log("CAMERA ERROR:",error);
 
 
     alert(
-      "Camera unavailable:\n\n" +
-      error
+      "Camera unavailable:\n\n" + error
     );
+
 
   });
 
+
 }
+
+
+
 
 
 // ===============================
@@ -298,77 +181,29 @@ function startScanner(){
 
 function stopScanner(){
 
-  if(!scanner){
-    return;
-  }
+
+  if(scanner){
 
 
-  const activeScanner = scanner;
-
-  scanner = null;
+    scanner.stop().then(()=>{
 
 
-  const cameraBox =
-    document.getElementById("cameraBox");
-
-  const closeCameraBtn =
-    document.getElementById("closeCameraBtn");
-
-  const scanBtn =
-    document.getElementById("scanBtn");
+      document.getElementById("cameraBox").style.display="none";
 
 
-  activeScanner
-    .stop()
-    .then(function(){
-
-      if(cameraBox){
-        cameraBox.style.display = "none";
-      }
-
-      if(closeCameraBtn){
-        closeCameraBtn.style.display = "none";
-      }
-
-      if(scanBtn){
-        scanBtn.style.display = "block";
-      }
+      document.getElementById("closeCameraBtn").style.display="none";
 
 
-      try{
-
-        activeScanner.clear();
-
-      }catch(error){
-
-        console.log(
-          "Scanner clear error:",
-          error
-        );
-
-      }
-
-    })
-    .catch(function(error){
-
-      console.log(
-        "Scanner stop error:",
-        error
-      );
+      document.getElementById("scanBtn").style.display="block";
 
 
-      if(cameraBox){
-        cameraBox.style.display = "none";
-      }
+      scanner.clear();
 
-      if(closeCameraBtn){
-        closeCameraBtn.style.display = "none";
-      }
-
-      if(scanBtn){
-        scanBtn.style.display = "block";
-      }
 
     });
+
+
+  }
+
 
 }

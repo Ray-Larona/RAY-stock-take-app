@@ -1,18 +1,27 @@
 let currentLocation = "";
 
+let stockItems = [];
+
+// Cache DOM elements
+let itemListBox = null;
+let totalElement = null;
+let currentLocationElement = null;
+let bluetoothInputElement = null;
+let barcodeElement = null;
+
+
 // ===============================
 // LOCATION
 // ===============================
 
 function setLocation(){
 
-  let input =
-  document.getElementById("locationInput").value.trim();
+  const input =
+    document.getElementById("locationInput").value.trim();
 
-  if(input==""){
+  if(input === ""){
 
     alert("Please enter location");
-
     return;
 
   }
@@ -24,47 +33,42 @@ function setLocation(){
     currentLocation
   );
 
-  document.getElementById("currentLocation").innerHTML =
-  currentLocation;
+  if(!currentLocationElement){
+    currentLocationElement =
+      document.getElementById("currentLocation");
+  }
 
-  alert(
-    "Location set: " + currentLocation
-  );
+  if(currentLocationElement){
+    currentLocationElement.textContent =
+      currentLocation;
+  }
 
+  alert("Location set: " + currentLocation);
 }
-
 
 
 function loadLocation(){
 
-  let saved =
-  localStorage.getItem("currentLocation");
+  const saved =
+    localStorage.getItem("currentLocation");
 
   if(saved){
 
     currentLocation = saved;
 
-    let display =
-    document.getElementById("currentLocation");
+    if(!currentLocationElement){
+      currentLocationElement =
+        document.getElementById("currentLocation");
+    }
 
-    if(display){
-
-      display.innerHTML=currentLocation;
-
+    if(currentLocationElement){
+      currentLocationElement.textContent =
+        currentLocation;
     }
 
   }
 
 }
-
-
-
-// ===============================
-// STOCK ITEMS
-// ===============================
-
-let stockItems = [];
-
 
 
 // ===============================
@@ -73,19 +77,35 @@ let stockItems = [];
 
 function loadItems(){
 
-  let saved =
-  localStorage.getItem("stockItems");
+  const saved =
+    localStorage.getItem("stockItems");
 
   if(saved){
 
-    stockItems = JSON.parse(saved);
+    try{
+
+      stockItems = JSON.parse(saved);
+
+      if(!Array.isArray(stockItems)){
+        stockItems = [];
+      }
+
+    }catch(error){
+
+      console.log(
+        "Unable to load saved stock items:",
+        error
+      );
+
+      stockItems = [];
+
+    }
 
   }
 
   displayItems();
 
 }
-
 
 
 // ===============================
@@ -94,9 +114,25 @@ function loadItems(){
 
 function addBarcode(barcode){
 
-  let foundIndex = stockItems.findIndex(
-    item => item.barcode == barcode
-  );
+  barcode = String(barcode).trim();
+
+  if(barcode === ""){
+    return;
+  }
+
+
+  let foundIndex = -1;
+
+  for(let i = 0; i < stockItems.length; i++){
+
+    if(stockItems[i].barcode == barcode){
+
+      foundIndex = i;
+      break;
+
+    }
+
+  }
 
 
   if(foundIndex !== -1){
@@ -104,18 +140,22 @@ function addBarcode(barcode){
     stockItems[foundIndex].qty += 1;
 
 
-    let item =
-    stockItems.splice(foundIndex,1)[0];
+    // Move scanned item to top
+    if(foundIndex !== 0){
 
-    stockItems.unshift(item);
+      const item =
+        stockItems.splice(foundIndex, 1)[0];
+
+      stockItems.unshift(item);
+
+    }
 
   }else{
 
     stockItems.unshift({
 
       barcode: barcode,
-
-      qty:1
+      qty: 1
 
     });
 
@@ -123,11 +163,9 @@ function addBarcode(barcode){
 
 
   saveItems();
-
   displayItems();
 
 }
-
 
 
 // ===============================
@@ -136,156 +174,204 @@ function addBarcode(barcode){
 
 function saveItems(){
 
-  localStorage.setItem(
-    "stockItems",
-    JSON.stringify(stockItems)
-  );
+  try{
+
+    localStorage.setItem(
+      "stockItems",
+      JSON.stringify(stockItems)
+    );
+
+  }catch(error){
+
+    console.log(
+      "Local storage error:",
+      error
+    );
+
+  }
 
 }
-
 
 
 // ===============================
 // DISPLAY LIST
 // ===============================
+
 function displayItems(){
 
-let box =
-document.getElementById("itemList");
+  if(!itemListBox){
+    itemListBox =
+      document.getElementById("itemList");
+  }
 
-if(!box){
+  if(!itemListBox){
+    return;
+  }
 
-return;
+
+  // Build entire HTML in memory first.
+  // This avoids repeated innerHTML += operations.
+  let html = "";
+
+  for(let index = 0; index < stockItems.length; index++){
+
+    const item = stockItems[index];
+
+    html +=
+    '<div class="item-row">' +
+
+      '<div class="barcode">' +
+        escapeHtml(item.barcode) +
+      '</div>' +
+
+      '<div class="qty-control">' +
+
+        '<button ' +
+          'class="qty-btn" ' +
+          'onclick="changeQty(' + index + ',-1)">' +
+          '-' +
+        '</button>' +
+
+        '<span ' +
+          'class="qty" ' +
+          'onclick="editQty(' + index + ')" ' +
+          'style="cursor:pointer;">' +
+          item.qty +
+        '</span>' +
+
+        '<button ' +
+          'class="qty-btn" ' +
+          'onclick="changeQty(' + index + ',1)">' +
+          '+' +
+        '</button>' +
+
+      '</div>' +
+
+    '</div>';
+
+  }
+
+
+  itemListBox.innerHTML = html;
+
+
+  if(!totalElement){
+    totalElement =
+      document.getElementById("total");
+  }
+
+  if(totalElement){
+    totalElement.textContent = totalItems();
+  }
 
 }
 
-box.innerHTML = "";
 
-stockItems.forEach((item,index)=>{
+// ===============================
+// SAFE HTML
+// ===============================
 
-box.innerHTML += `
+function escapeHtml(value){
 
-<div class="item-row">
-
-  <div class="barcode">
-    ${item.barcode}
-  </div>
-
-  <div class="qty-control">
-
-    <button
-      class="qty-btn"
-      onclick="changeQty(${index},-1)">
-      -
-    </button>
-
-    <span
-      class="qty"
-      onclick="editQty(${index})"
-      style="cursor:pointer;">
-      ${item.qty}
-    </span>
-
-    <button
-      class="qty-btn"
-      onclick="changeQty(${index},1)">
-      +
-    </button>
-
-  </div>
-
-</div>
-
-`;
-
-});
-
-let total =
-document.getElementById("total");
-
-if(total){
-
-total.innerHTML = totalItems();
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 }
 
-}
 
 // ===============================
 // CHANGE QTY (+ / -)
 // ===============================
 
-function changeQty(index,value){
+function changeQty(index, value){
+
+  if(!stockItems[index]){
+    return;
+  }
 
   stockItems[index].qty += value;
 
 
-  if(stockItems[index].qty <=0){
+  if(stockItems[index].qty <= 0){
 
-    stockItems.splice(index,1);
+    stockItems.splice(index, 1);
 
   }
 
 
   saveItems();
-
   displayItems();
 
-
-  // Return to Bluetooth scanner
   focusBluetoothScanner();
 
 }
 
+
+// ===============================
+// EDIT QTY
+// ===============================
+
 function editQty(index){
 
-let newQty =
-prompt(
-"Enter quantity:",
-stockItems[index].qty
-);
+  if(!stockItems[index]){
+    return;
+  }
 
-if(newQty === null){
+  const newQty =
+    prompt(
+      "Enter quantity:",
+      stockItems[index].qty
+    );
 
-return;
+  if(newQty === null){
+    return;
+  }
+
+
+  const parsedQty =
+    parseInt(newQty, 10);
+
+
+  if(isNaN(parsedQty) || parsedQty <= 0){
+
+    alert("Please enter a valid quantity.");
+    return;
+
+  }
+
+
+  stockItems[index].qty =
+    parsedQty;
+
+  saveItems();
+  displayItems();
+
+  focusBluetoothScanner();
 
 }
 
-newQty =
-parseInt(newQty,10);
-
-if(isNaN(newQty) || newQty <= 0){
-
-alert("Please enter a valid quantity.");
-
-return;
-
-}
-
-stockItems[index].qty =
-newQty;
-
-saveItems();
-
-displayItems();
-
-focusBluetoothScanner();
-
-}
 
 // ===============================
 // DIRECT QTY INPUT
 // ===============================
 
-function setQty(index,value){
+function setQty(index, value){
 
-  let qty =
-  parseInt(value,10);
+  if(!stockItems[index]){
+    return;
+  }
+
+  const qty =
+    parseInt(value, 10);
 
 
   if(isNaN(qty) || qty <= 0){
 
-    stockItems.splice(index,1);
+    stockItems.splice(index, 1);
 
   }else{
 
@@ -295,33 +381,28 @@ function setQty(index,value){
 
 
   saveItems();
-
   displayItems();
 
-
-  // Return to Bluetooth scanner
   focusBluetoothScanner();
 
 }
-
 
 
 // ===============================
 // QTY ENTER KEY
 // ===============================
 
-function qtyKeyDown(event,index,input){
+function qtyKeyDown(event, index, input){
 
   if(event.key === "Enter"){
 
     event.preventDefault();
 
-    setQty(index,input.value);
+    setQty(index, input.value);
 
   }
 
 }
-
 
 
 // ===============================
@@ -330,29 +411,31 @@ function qtyKeyDown(event,index,input){
 
 function focusBluetoothScanner(){
 
-  let bluetoothInput =
-  document.getElementById("bluetoothInput");
+  if(!bluetoothInputElement){
 
-  if(!bluetoothInput){
-
-    return;
+    bluetoothInputElement =
+      document.getElementById("bluetoothInput");
 
   }
 
+  if(!bluetoothInputElement){
+    return;
+  }
 
-  let mode =
-  document.querySelector(
-    'input[name="scanMethod"]:checked'
-  );
+
+  const mode =
+    document.querySelector(
+      'input[name="scanMethod"]:checked'
+    );
 
 
   if(mode && mode.value === "bluetooth"){
 
     setTimeout(function(){
 
-      bluetoothInput.focus();
+      bluetoothInputElement.focus();
 
-    },100);
+    }, 100);
 
   }
 
@@ -367,18 +450,15 @@ function totalItems(){
 
   let total = 0;
 
+  for(let i = 0; i < stockItems.length; i++){
 
-  stockItems.forEach(item=>{
+    total += Number(stockItems[i].qty) || 0;
 
-    total += item.qty;
-
-  });
-
+  }
 
   return total;
 
 }
-
 
 
 // ===============================
@@ -387,36 +467,45 @@ function totalItems(){
 
 function clearList(){
 
-  let confirmClear =
-  confirm(
-    "⚠️ Clear all scanned items?"
+  const confirmClear =
+    confirm(
+      "⚠️ Clear all scanned items?"
+    );
+
+
+  if(!confirmClear){
+    return;
+  }
+
+
+  stockItems = [];
+
+  localStorage.removeItem(
+    "stockItems"
   );
 
 
-  if(confirmClear){
-
-    stockItems = [];
-
-    localStorage.removeItem(
-      "stockItems"
-    );
+  displayItems();
 
 
-    displayItems();
+  if(!barcodeElement){
 
-
-    document.getElementById("barcode").innerHTML =
-    "---";
-
-
-    alert(
-      "List cleared"
-    );
+    barcodeElement =
+      document.getElementById("barcode");
 
   }
 
-}
+  if(barcodeElement){
 
+    barcodeElement.textContent =
+      "---";
+
+  }
+
+
+  alert("List cleared");
+
+}
 
 
 // ===============================
@@ -425,14 +514,21 @@ function clearList(){
 
 function manualAddBarcode(){
 
-  let barcode =
-  document.getElementById("manualBarcode").value.trim();
+  const input =
+    document.getElementById("manualBarcode");
+
+  if(!input){
+    return;
+  }
 
 
-  if(barcode==""){
+  const barcode =
+    input.value.trim();
+
+
+  if(barcode === ""){
 
     alert("Please enter barcode");
-
     return;
 
   }
@@ -440,11 +536,9 @@ function manualAddBarcode(){
 
   addBarcode(barcode);
 
-
-  document.getElementById("manualBarcode").value="";
+  input.value = "";
 
 }
-
 
 
 // ===============================
@@ -453,17 +547,25 @@ function manualAddBarcode(){
 
 function changeScanMode(){
 
-  let mode =
-  document.querySelector(
-    'input[name="scanMethod"]:checked'
-  ).value;
+  const selected =
+    document.querySelector(
+      'input[name="scanMethod"]:checked'
+    );
 
 
-  let scanBtn =
-  document.getElementById("scanBtn");
+  if(!selected){
+    return;
+  }
 
-  let bluetoothInput =
-  document.getElementById("bluetoothInput");
+
+  const mode = selected.value;
+
+
+  const scanBtn =
+    document.getElementById("scanBtn");
+
+  const bluetoothInput =
+    document.getElementById("bluetoothInput");
 
 
   if(!scanBtn || !bluetoothInput){
@@ -483,8 +585,7 @@ function changeScanMode(){
       "BLUETOOTH SCANNER MODE"
     );
 
-
-    scanBtn.style.display="none";
+    scanBtn.style.display = "none";
 
     bluetoothInput.focus();
 
@@ -494,13 +595,11 @@ function changeScanMode(){
       "CAMERA SCANNER MODE"
     );
 
-
-    scanBtn.style.display="block";
+    scanBtn.style.display = "block";
 
   }
 
 }
-
 
 
 // ===============================
@@ -511,25 +610,40 @@ window.addEventListener(
   "load",
   function(){
 
+    // Cache frequently used elements
+    itemListBox =
+      document.getElementById("itemList");
+
+    totalElement =
+      document.getElementById("total");
+
+    currentLocationElement =
+      document.getElementById("currentLocation");
+
+    bluetoothInputElement =
+      document.getElementById("bluetoothInput");
+
+    barcodeElement =
+      document.getElementById("barcode");
+
+
     loadItems();
 
     loadLocation();
 
 
-    let bluetoothInput =
-    document.getElementById("bluetoothInput");
+    if(bluetoothInputElement){
 
-
-    if(bluetoothInput){
-
-      bluetoothInput.addEventListener(
+      bluetoothInputElement.addEventListener(
         "keydown",
         function(e){
 
           if(e.key === "Enter"){
 
-            let barcode =
-            this.value.trim();
+            e.preventDefault();
+
+            const barcode =
+              this.value.trim();
 
 
             if(barcode){
@@ -539,20 +653,18 @@ window.addEventListener(
                 barcode
               );
 
-
               addBarcode(barcode);
 
             }
 
 
-            this.value="";
+            this.value = "";
 
             this.focus();
 
           }
 
         }
-
       );
 
     }
